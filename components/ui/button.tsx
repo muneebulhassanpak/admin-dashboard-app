@@ -56,6 +56,22 @@ function Button({
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button"
 
+  // When using asChild, we can't add loading spinner as it would create multiple children
+  // The loading state only works with regular buttons
+  if (asChild) {
+    return (
+      <Comp
+        data-slot="button"
+        data-variant={variant}
+        data-size={size}
+        className={cn(buttonVariants({ variant, size, className }))}
+        {...props}
+      >
+        {children}
+      </Comp>
+    )
+  }
+
   return (
     <Comp
       data-slot="button"
@@ -65,9 +81,7 @@ function Button({
       disabled={disabled || loading}
       {...props}
     >
-      {loading && (
-        <Loader className="animate-spin" />
-      )}
+      {loading && <Loader className="animate-spin" />}
       {children}
     </Comp>
   )

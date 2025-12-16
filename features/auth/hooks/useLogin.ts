@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { ROUTES } from '@/lib/routes';
 import { authService } from '../services/authService';
 import type { LoginCredentials, UseLoginReturn } from '../types';
 
@@ -22,9 +23,9 @@ export function useLogin(): UseLoginReturn {
         description: `Welcome back, ${user.name}`,
       });
 
-      // Redirect to dashboard or home page
+      // Redirect to dashboard
       setTimeout(() => {
-        router.push('/');
+        router.push(ROUTES.DASHBOARD.ROOT);
       }, 500);
     } catch (err) {
       if (err instanceof Error) {
