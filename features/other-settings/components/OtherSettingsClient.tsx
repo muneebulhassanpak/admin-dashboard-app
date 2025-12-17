@@ -1,34 +1,32 @@
 /**
- * ConfigureLLMClient Component
- * Client component that handles the LLM configuration logic
+ * OtherSettingsClient Component
+ * Client component that handles the Other Settings logic
  */
 
 'use client';
 
-import { useLLMConfig } from '@/features/configure-llm/hooks';
-import {
-  ConfigureLLMForm,
-  ConfigureLLMSkeleton,
-} from '@/features/configure-llm/components';
+import { useOtherSettings } from '../hooks';
+import { OtherSettingsForm } from './OtherSettingsForm';
+import { OtherSettingsSkeleton } from './OtherSettingsSkeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export function ConfigureLLMClient() {
-  const { config, models, loading, saving, error, updateConfig } =
-    useLLMConfig();
+export function OtherSettingsClient() {
+  const { settings, loading, saving, error, updateSettings, toggleMaintenance } =
+    useOtherSettings();
 
   if (loading) {
-    return <ConfigureLLMSkeleton />;
+    return <OtherSettingsSkeleton />;
   }
 
-  if (error || !config) {
+  if (error || !settings) {
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>
-          {error || 'Failed to load configuration'}
+          {error || 'Failed to load settings'}
         </AlertDescription>
         <Button
           variant="outline"
@@ -43,10 +41,10 @@ export function ConfigureLLMClient() {
   }
 
   return (
-    <ConfigureLLMForm
-      config={config}
-      models={models}
-      onSave={updateConfig}
+    <OtherSettingsForm
+      settings={settings}
+      onSave={updateSettings}
+      onToggleMaintenance={toggleMaintenance}
       saving={saving}
     />
   );

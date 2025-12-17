@@ -1,0 +1,1 @@
+export { useOtherSettings } from './useOtherSettings';
