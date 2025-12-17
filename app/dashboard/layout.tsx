@@ -24,8 +24,8 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar variant='floating' />
-      <SidebarInset className='p-2'>
-        <div className="flex flex-1 flex-col overflow-y-auto rounded-xl border bg-card shadow-sm">
+      <SidebarInset className='p-2 h-screen'>
+        <div className="flex flex-col h-full rounded-xl border bg-card shadow-sm">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-card">
             <SidebarTrigger className="-ml-1" />
             <Separator
@@ -49,7 +49,7 @@ export default function DashboardLayout({
               <ModeToggle />
             </div>
           </header>
-          <div className="flex-1 overflow-auto p-4 md:p-6">{children}</div>
+          <div className="flex-1 overflow-y-auto p-4 md:p-6">{children}</div>
         </div>
       </SidebarInset>
     </SidebarProvider>
