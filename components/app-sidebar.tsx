@@ -10,7 +10,6 @@ import {
   Settings,
   Sliders,
   BookOpen,
-  Upload,
   Home,
   LogOut,
 } from 'lucide-react';
@@ -63,11 +62,6 @@ const menuItems = [
     title: 'Manage Knowledge Base',
     url: ROUTES.DASHBOARD.MANAGE_KNOWLEDGE_BASE,
     icon: BookOpen,
-  },
-  {
-    title: 'Document Uploads',
-    url: ROUTES.DASHBOARD.DOCUMENT_UPLOADS,
-    icon: Upload,
   },
 ];
 
