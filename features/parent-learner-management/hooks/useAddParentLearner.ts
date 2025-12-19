@@ -10,6 +10,8 @@ import type {
   UseAddParentLearnerReturn,
   CreateParentDto,
   CreateLearnerDto,
+  UpdateParentDto,
+  UpdateLearnerDto,
   ParentOption,
   LevelOption,
   SubjectOption,
@@ -155,13 +157,45 @@ export function useAddParentLearner(): UseAddParentLearnerReturn {
     }
   };
 
+  // Update parent
+  const updateParent = async (data: UpdateParentDto): Promise<void> => {
+    setAddingParent(true);
+    setError(null);
+    try {
+      await parentLearnerService.updateParent(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update parent';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setAddingParent(false);
+    }
+  };
+
+  // Update learner
+  const updateLearner = async (data: UpdateLearnerDto): Promise<void> => {
+    setAddingLearner(true);
+    setError(null);
+    try {
+      await parentLearnerService.updateLearner(data);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update learner';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setAddingLearner(false);
+    }
+  };
+
   return {
     // Parent operations
     addParent,
+    updateParent,
     addingParent,
 
     // Learner operations
     addLearner,
+    updateLearner,
     addingLearner,
 
     // Dropdown data

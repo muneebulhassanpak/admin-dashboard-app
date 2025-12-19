@@ -43,6 +43,7 @@ interface UserTableProps {
   onSearchChange: (query: string) => void;
   onDeleteUser: (id: string) => Promise<void>;
   onToggleStatus: (id: string) => Promise<void>;
+  onEditUser: (user: User) => void;
   pagination: {
     page: number;
     pageSize: number;
@@ -61,6 +62,7 @@ export function UserTable({
   onSearchChange,
   onDeleteUser,
   onToggleStatus,
+  onEditUser,
   pagination,
   onPageChange,
 }: UserTableProps) {
@@ -190,6 +192,7 @@ export function UserTable({
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8 p-0 hover:bg-muted"
+                onClick={() => onEditUser(user)}
                 disabled={isDeleting}
               >
                 <Pencil className="h-4 w-4" />

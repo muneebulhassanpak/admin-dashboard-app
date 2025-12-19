@@ -27,14 +27,16 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { format } from 'date-fns';
 import type {
   CreateLearnerDto,
+  UpdateLearnerDto,
   ParentOption,
   LevelOption,
   SubjectOption,
   SchoolOption,
 } from '../types';
+import type { User } from '@/features/user-management/types';
 
-// Validation schema
-const learnerSchema = z.object({
+// Validation schema for creating
+const learnerCreateSchema = z.object({
   parentId: z.string().min(1, 'Parent is required'),
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
@@ -46,8 +48,21 @@ const learnerSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+// Validation schema for editing (only subjects and password)
+const learnerUpdateSchema = z.object({
+  parentId: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional(),
+  level: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  subjects: z.array(z.string()).min(1, 'At least one subject is required'),
+  school: z.string().optional(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
 interface LearnerFormProps {
-  onSubmit: (data: CreateLearnerDto) => void;
+  onSubmit: (data: CreateLearnerDto | UpdateLearnerDto) => void;
   parents: ParentOption[];
   levels: LevelOption[];
   schools: SchoolOption[];
@@ -55,6 +70,8 @@ interface LearnerFormProps {
   loadingParents: boolean;
   loadingLevels: boolean;
   loadingSchools: boolean;
+  isEditMode?: boolean;
+  editUser?: User | null;
 }
 
 export interface LearnerFormRef {
@@ -62,6 +79,15 @@ export interface LearnerFormRef {
 }
 
 type LearnerFormValues = Omit<CreateLearnerDto, 'profilePicture'>;
+type LearnerUpdateFormValues = Omit<UpdateLearnerDto, 'id'> & {
+  parentId?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  level?: string;
+  dateOfBirth?: string;
+  school?: string;
+};
 
 export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   onSubmit,
@@ -72,12 +98,14 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   loadingParents,
   loadingLevels,
   loadingSchools,
+  isEditMode = false,
+  editUser,
 }, ref) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [loadingSubjects, setLoadingSubjects] = useState(false);
 
-  const form = useForm<LearnerFormValues>({
-    resolver: zodResolver(learnerSchema),
+  const form = useForm<LearnerFormValues | LearnerUpdateFormValues>({
+    resolver: zodResolver(isEditMode ? learnerUpdateSchema : learnerCreateSchema) as any,
     defaultValues: {
       parentId: '',
       firstName: '',
@@ -91,6 +119,25 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
     },
   });
 
+  // Pre-fill form in edit mode
+  useEffect(() => {
+    if (isEditMode && editUser) {
+      const [firstName = '', lastName = ''] = editUser.username.split(' ');
+      form.reset({
+        parentId: editUser.parentId || '',
+        firstName,
+        lastName,
+        username: editUser.username,
+        level: editUser.level || '',
+        dateOfBirth: '', // We don't have DOB in User type
+        subjects: [], // We don't store subjects in User type, leave empty for user to select
+        school: '', // We don't have school in User type
+        password: '',
+      });
+      setSelectedLevel(editUser.level || '');
+    }
+  }, [isEditMode, editUser, form]);
+
   // Simulate fetching subjects when level changes
   useEffect(() => {
     if (selectedLevel) {
@@ -102,8 +149,8 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
     }
   }, [selectedLevel]);
 
-  const handleFormSubmit = (data: LearnerFormValues) => {
-    onSubmit(data as CreateLearnerDto);
+  const handleFormSubmit = (data: LearnerFormValues | LearnerUpdateFormValues) => {
+    onSubmit(data as CreateLearnerDto | UpdateLearnerDto);
   };
 
   useImperativeHandle(ref, () => ({
@@ -123,7 +170,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Parent</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEditMode}>
                 <FormControl className='w-full'>
                   <SelectTrigger>
                     <SelectValue placeholder={loadingParents ? 'Loading parents...' : 'Select a parent'} />
@@ -150,7 +197,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
               <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Jane" {...field} />
+                  <Input placeholder="Jane" {...field} disabled={isEditMode} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -164,7 +211,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Doe" {...field} />
+                  <Input placeholder="Doe" {...field} disabled={isEditMode} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -186,6 +233,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
                     form.setValue('subjects', []);
                   }}
                   defaultValue={field.value}
+                  disabled={isEditMode}
                 >
                   <FormControl className='w-full'>
                     <SelectTrigger>
@@ -218,6 +266,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
                       field.onChange(date ? format(date, 'yyyy-MM-dd') : '');
                     }}
                     placeholder="Select date of birth"
+                    disabled={isEditMode}
                   />
                 </FormControl>
                 <FormMessage />
@@ -301,7 +350,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
           render={({ field }) => (
             <FormItem>
               <FormLabel>School</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEditMode}>
                 <FormControl className='w-full'>
                   <SelectTrigger>
                     <SelectValue placeholder={loadingSchools ? 'Loading schools...' : 'Select a school'} />
@@ -327,7 +376,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="janedoe123" {...field} />
+                <Input placeholder="janedoe123" {...field} disabled={isEditMode} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -339,7 +388,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{isEditMode ? 'New Password' : 'Password'}</FormLabel>
               <FormControl>
                 <PasswordInput placeholder="••••••••" {...field} />
               </FormControl>

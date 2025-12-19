@@ -8,6 +8,8 @@ import type {
   Learner,
   CreateParentDto,
   CreateLearnerDto,
+  UpdateParentDto,
+  UpdateLearnerDto,
   ParentOption,
   LevelOption,
   SubjectOption,
@@ -158,5 +160,47 @@ export const parentLearnerService = {
     mockDataStore.addUser(userRecord);
 
     return newLearner;
+  },
+
+  /**
+   * Update parent password
+   */
+  async updateParent(dto: UpdateParentDto): Promise<void> {
+    await delay(600);
+
+    // Validate password
+    if (dto.password.length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+
+    // In a real app, this would update the password in the database
+    // For this mock, we'll just simulate the delay
+    // The password update would be handled server-side
+  },
+
+  /**
+   * Update learner subjects and password
+   */
+  async updateLearner(dto: UpdateLearnerDto): Promise<void> {
+    await delay(700);
+
+    // Validate password
+    if (dto.password.length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+
+    // Validate subjects
+    if (dto.subjects.length === 0) {
+      throw new Error('At least one subject is required');
+    }
+
+    // Update the user in mockDataStore
+    mockDataStore.updateUser(dto.id, {
+      // We don't store subjects in the User type, so we won't update it here
+      // In a real app, subjects would be stored in a separate table
+    });
+
+    // In a real app, this would update the learner's subjects and password
+    // For this mock, the password update would be handled server-side
   },
 };

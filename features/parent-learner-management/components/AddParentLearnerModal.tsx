@@ -14,27 +14,43 @@ import { Button } from '@/components/ui/button';
 import { ParentForm, type ParentFormRef } from './ParentForm';
 import { LearnerForm, type LearnerFormRef } from './LearnerForm';
 import { useAddParentLearner } from '../hooks';
-import type { CreateParentDto, CreateLearnerDto } from '../types';
+import type { CreateParentDto, CreateLearnerDto, UpdateParentDto, UpdateLearnerDto } from '../types';
+import type { User } from '@/features/user-management/types';
+import { UserType } from '@/features/user-management/types';
 
 interface AddParentLearnerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+  editUser?: User | null;
 }
 
 export function AddParentLearnerModal({
   open,
   onOpenChange,
   onSuccess,
+  editUser,
 }: AddParentLearnerModalProps) {
+  const isEditMode = !!editUser;
   const [activeTab, setActiveTab] = useState<'parent' | 'learner'>('parent');
   const parentFormRef = useRef<ParentFormRef>(null);
   const learnerFormRef = useRef<LearnerFormRef>(null);
 
+  // Set initial tab based on editUser type
+  useEffect(() => {
+    if (editUser) {
+      setActiveTab(editUser.userType === UserType.PARENT ? 'parent' : 'learner');
+    } else {
+      setActiveTab('parent');
+    }
+  }, [editUser]);
+
   const {
     addParent,
+    updateParent,
     addingParent,
     addLearner,
+    updateLearner,
     addingLearner,
     parents,
     levels,
@@ -55,12 +71,20 @@ export function AddParentLearnerModal({
     }
   }, [error]);
 
-  const handleAddParent = async (data: CreateParentDto) => {
+  const handleParentSubmit = async (data: CreateParentDto | UpdateParentDto) => {
     try {
-      await addParent(data);
-      toast.success('Parent added successfully', {
-        position: 'top-center',
-      });
+      if (isEditMode) {
+        // In edit mode, data will only have password field
+        await updateParent({ id: editUser!.id, password: (data as UpdateParentDto).password });
+        toast.success('Password updated successfully', {
+          position: 'top-center',
+        });
+      } else {
+        await addParent(data as CreateParentDto);
+        toast.success('Parent added successfully', {
+          position: 'top-center',
+        });
+      }
       onOpenChange(false);
       onSuccess?.();
     } catch (err) {
@@ -68,12 +92,24 @@ export function AddParentLearnerModal({
     }
   };
 
-  const handleAddLearner = async (data: CreateLearnerDto) => {
+  const handleLearnerSubmit = async (data: CreateLearnerDto | UpdateLearnerDto) => {
     try {
-      await addLearner(data);
-      toast.success('Learner added successfully', {
-        position: 'top-center',
-      });
+      if (isEditMode) {
+        // In edit mode, data will only have subjects and password fields
+        await updateLearner({
+          id: editUser!.id,
+          subjects: (data as UpdateLearnerDto).subjects,
+          password: (data as UpdateLearnerDto).password,
+        });
+        toast.success('Learner updated successfully', {
+          position: 'top-center',
+        });
+      } else {
+        await addLearner(data as CreateLearnerDto);
+        toast.success('Learner added successfully', {
+          position: 'top-center',
+        });
+      }
       onOpenChange(false);
       onSuccess?.();
     } catch (err) {
@@ -86,31 +122,45 @@ export function AddParentLearnerModal({
       <DialogContent className="md:max-w-4xl max-h-[90vh] flex flex-col p-0 gap-0">
         <div className="px-6 pt-6 pb-4 border-b">
           <DialogHeader>
-            <DialogTitle>Add New Parent or Learner</DialogTitle>
+            <DialogTitle>
+              {isEditMode
+                ? `Edit ${editUser.userType === UserType.PARENT ? 'Parent' : 'Learner'}`
+                : 'Add New Parent or Learner'}
+            </DialogTitle>
             <DialogDescription>
-              Choose whether to add a new parent account or a new learner under an
-              existing parent.
+              {isEditMode
+                ? editUser.userType === UserType.PARENT
+                  ? 'Update password for this parent account.'
+                  : 'Update subjects and password for this learner.'
+                : 'Choose whether to add a new parent account or a new learner under an existing parent.'}
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'parent' | 'learner')} className="flex flex-col flex-1 overflow-hidden">
-          <div className="px-6 pt-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="parent">Parent</TabsTrigger>
-              <TabsTrigger value="learner">Learner</TabsTrigger>
-            </TabsList>
-          </div>
+          {!isEditMode && (
+            <div className="px-6 pt-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="parent">Parent</TabsTrigger>
+                <TabsTrigger value="learner">Learner</TabsTrigger>
+              </TabsList>
+            </div>
+          )}
 
           <div className="flex-1 overflow-y-auto px-6 py-4">
             <TabsContent value="parent" className="mt-0">
-              <ParentForm ref={parentFormRef} onSubmit={handleAddParent} />
+              <ParentForm
+                ref={parentFormRef}
+                onSubmit={handleParentSubmit}
+                isEditMode={isEditMode}
+                editUser={editUser}
+              />
             </TabsContent>
 
             <TabsContent value="learner" className="mt-0">
               <LearnerForm
                 ref={learnerFormRef}
-                onSubmit={handleAddLearner}
+                onSubmit={handleLearnerSubmit}
                 parents={parents}
                 levels={levels}
                 schools={schools}
@@ -118,6 +168,8 @@ export function AddParentLearnerModal({
                 loadingParents={loadingParents}
                 loadingLevels={loadingLevels}
                 loadingSchools={loadingSchools}
+                isEditMode={isEditMode}
+                editUser={editUser}
               />
             </TabsContent>
           </div>
@@ -130,7 +182,7 @@ export function AddParentLearnerModal({
                 disabled={addingParent}
                 loading={addingParent}
               >
-                Add Parent
+                {isEditMode ? 'Update Password' : 'Add Parent'}
               </Button>
             )}
             {activeTab === 'learner' && (
@@ -140,7 +192,7 @@ export function AddParentLearnerModal({
                 disabled={addingLearner}
                 loading={addingLearner}
               >
-                Add Learner
+                {isEditMode ? 'Update Learner' : 'Add Learner'}
               </Button>
             )}
           </div>

@@ -7,9 +7,11 @@ import { UserTable } from './UserTable';
 import { Button } from '@/components/ui/button';
 import { AddParentLearnerModal } from '@/features/parent-learner-management/components';
 import { BadgePlus } from 'lucide-react';
+import type { User } from '../types';
 
 export function UserManagementClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const {
     users,
@@ -57,6 +59,16 @@ export function UserManagementClient() {
     }
   };
 
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingUser(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -81,14 +93,19 @@ export function UserManagementClient() {
         onSearchChange={setSearchQuery}
         onDeleteUser={handleDeleteUser}
         onToggleStatus={handleToggleStatus}
+        onEditUser={handleEditUser}
         pagination={pagination}
         onPageChange={setPage}
       />
 
       <AddParentLearnerModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSuccess={refreshUsers}
+        onOpenChange={handleModalClose}
+        onSuccess={() => {
+          refreshUsers();
+          handleModalClose();
+        }}
+        editUser={editingUser}
       />
     </div>
   );

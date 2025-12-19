@@ -74,14 +74,27 @@ export interface CreateLearnerDto {
   profilePicture?: File;
 }
 
+export interface UpdateParentDto {
+  id: string;
+  password: string;
+}
+
+export interface UpdateLearnerDto {
+  id: string;
+  subjects: string[];
+  password: string;
+}
+
 // Hook Return Types
 export interface UseAddParentLearnerReturn {
   // Parent operations
   addParent: (data: CreateParentDto) => Promise<Parent>;
+  updateParent: (data: UpdateParentDto) => Promise<void>;
   addingParent: boolean;
 
   // Learner operations
   addLearner: (data: CreateLearnerDto) => Promise<Learner>;
+  updateLearner: (data: UpdateLearnerDto) => Promise<void>;
   addingLearner: boolean;
 
   // Dropdown data
