@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import Image from 'next/image';
 import { useLogin } from '../hooks';
 import { MOCK_CREDENTIALS } from '../utils/constants';
@@ -113,8 +114,7 @@ export function LoginForm({
                       <FormItem>
                         <FormLabel className="text-sm font-medium">Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
+                          <PasswordInput
                             placeholder="Enter your password"
                             disabled={loading}
                             className="h-11"
