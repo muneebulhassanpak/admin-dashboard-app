@@ -1,8 +1,3 @@
-/**
- * AddParentLearnerModal Component
- * Modal with tabs for adding parents and learners
- */
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
