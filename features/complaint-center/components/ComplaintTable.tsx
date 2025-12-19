@@ -13,7 +13,6 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -135,8 +134,11 @@ export function ComplaintTable({
       {
         accessorKey: 'date',
         header: 'Date',
-        cell: ({ getValue }) => formatDate(getValue() as string),
-        size: 120,
+        cell: ({ getValue }) => (
+          <div className="w-[100px]">
+            <span className="text-sm">{formatDate(getValue() as string)}</span>
+          </div>
+        ),
       },
       {
         accessorKey: 'complaint',
@@ -144,8 +146,8 @@ export function ComplaintTable({
         cell: ({ getValue }) => {
           const text = getValue() as string;
           return (
-            <div className="max-w-xs">
-              <p className="truncate text-sm font-medium">{text}</p>
+            <div className="w-[250px]">
+              <p className="truncate text-sm font-medium" title={text}>{text}</p>
             </div>
           );
         },
@@ -156,8 +158,8 @@ export function ComplaintTable({
         cell: ({ getValue }) => {
           const text = getValue() as string;
           return (
-            <div className="max-w-xs">
-              <p className="truncate text-sm text-muted-foreground italic">
+            <div className="w-[200px]">
+              <p className="truncate text-sm text-muted-foreground italic" title={text}>
                 &ldquo;{text}&rdquo;
               </p>
             </div>
@@ -166,30 +168,21 @@ export function ComplaintTable({
       },
       {
         accessorKey: 'studentUsername',
-        header: 'Student Username',
+        header: 'Student',
         cell: ({ getValue }) => (
-          <span className="text-sm font-medium">{getValue() as string}</span>
+          <div className="w-[120px]">
+            <span className="text-sm font-medium truncate block">{getValue() as string}</span>
+          </div>
         ),
       },
       {
         accessorKey: 'parentEmail',
         header: 'Parent Email',
         cell: ({ getValue }) => (
-          <span className="text-sm text-muted-foreground">{getValue() as string}</span>
+          <div className="w-[180px]">
+            <span className="text-sm text-muted-foreground truncate block">{getValue() as string}</span>
+          </div>
         ),
-      },
-      {
-        id: 'priority',
-        header: 'Priority',
-        cell: ({ row }) => {
-          const priority = row.original.priority;
-          return (
-            <Badge variant={getPriorityBadgeVariant(priority)}>
-              {priority.charAt(0).toUpperCase() + priority.slice(1)}
-            </Badge>
-          );
-        },
-        size: 100,
       },
       {
         id: 'status',
@@ -200,20 +193,20 @@ export function ComplaintTable({
 
           if (isUpdating) {
             return (
-              <div className="flex items-center gap-2">
+              <div className="w-[100px] flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-muted-foreground">Updating...</span>
               </div>
             );
           }
 
           return (
-            <Badge variant={getStatusBadgeVariant(complaint.status)}>
-              {getStatusLabel(complaint.status)}
-            </Badge>
+            <div className="w-[100px]">
+              <Badge variant={getStatusBadgeVariant(complaint.status)}>
+                {getStatusLabel(complaint.status)}
+              </Badge>
+            </div>
           );
         },
-        size: 120,
       },
       {
         id: 'actions',
@@ -224,63 +217,64 @@ export function ComplaintTable({
           const isUpdating = updating === complaint.id;
 
           return (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  disabled={isDeleting || isUpdating}
-                >
-                  {isDeleting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <MoreHorizontal className="h-4 w-4" />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Details
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {complaint.status !== ComplaintStatusEnum.RESOLVED && (
-                  <DropdownMenuItem
-                    onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.RESOLVED)}
+            <div className="w-[60px]">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0"
+                    disabled={isDeleting || isUpdating}
                   >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Mark as Resolved
-                  </DropdownMenuItem>
-                )}
-                {complaint.status !== ComplaintStatusEnum.IN_REVIEW && (
-                  <DropdownMenuItem
-                    onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.IN_REVIEW)}
-                  >
+                    {isDeleting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <MoreHorizontal className="h-4 w-4" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
                     <Eye className="mr-2 h-4 w-4" />
-                    Mark as In Review
+                    View Details
                   </DropdownMenuItem>
-                )}
-                {complaint.status !== ComplaintStatusEnum.DISMISSED && (
+                  <DropdownMenuSeparator />
+                  {complaint.status !== ComplaintStatusEnum.RESOLVED && (
+                    <DropdownMenuItem
+                      onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.RESOLVED)}
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Mark as Resolved
+                    </DropdownMenuItem>
+                  )}
+                  {complaint.status !== ComplaintStatusEnum.IN_REVIEW && (
+                    <DropdownMenuItem
+                      onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.IN_REVIEW)}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      Mark as In Review
+                    </DropdownMenuItem>
+                  )}
+                  {complaint.status !== ComplaintStatusEnum.DISMISSED && (
+                    <DropdownMenuItem
+                      onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.DISMISSED)}
+                    >
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Dismiss
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => onUpdateStatus(complaint.id, ComplaintStatusEnum.DISMISSED)}
+                    onClick={() => onDeleteComplaint(complaint.id)}
+                    className="text-destructive focus:text-destructive"
                   >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Dismiss
+                    Delete
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onDeleteComplaint(complaint.id)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           );
         },
-        size: 70,
       },
     ],
     [updating, deleting, onUpdateStatus, onDeleteComplaint]
@@ -324,50 +318,52 @@ export function ComplaintTable({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No complaints found
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+      <div className="w-full rounded-lg border">
+        <div className="relative w-full overflow-x-auto">
+          <table className="caption-bottom text-sm">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} className="whitespace-nowrap">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    No complaints found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}
