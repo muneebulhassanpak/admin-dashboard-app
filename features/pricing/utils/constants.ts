@@ -1,0 +1,132 @@
+/**
+ * Pricing Constants and Mock Data
+ */
+
+import type { PricingPlan } from '../types';
+import { PlanStatus } from '../types';
+
+export const MOCK_PRICING_PLANS: PricingPlan[] = [
+  {
+    id: '1',
+    name: 'Free Tier',
+    description: 'Perfect for trying out our AI tutor',
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    status: PlanStatus.ACTIVE,
+    maxLearners: 1,
+    maxLessonsPerMonth: 10,
+    isDefault: true,
+    subscriberCount: 1234,
+    features: [
+      { name: 'Basic AI Responses', enabled: true },
+      { name: 'Email Support', enabled: true },
+      { name: 'Progress Tracking', enabled: false },
+      { name: 'Custom Learning Paths', enabled: false },
+      { name: 'Priority Support', enabled: false },
+      { name: 'Advanced Analytics', enabled: false },
+    ],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-01-15T10:00:00Z',
+  },
+  {
+    id: '2',
+    name: 'Basic Plan',
+    description: 'Great for families with young learners',
+    monthlyPrice: 19,
+    yearlyPrice: 190,
+    status: PlanStatus.ACTIVE,
+    maxLearners: 3,
+    maxLessonsPerMonth: 100,
+    subscriberCount: 456,
+    features: [
+      { name: 'Enhanced AI Responses', enabled: true },
+      { name: 'Email Support', enabled: true },
+      { name: 'Progress Tracking', enabled: true },
+      { name: 'Custom Learning Paths', enabled: true },
+      { name: 'Priority Support', enabled: false },
+      { name: 'Advanced Analytics', enabled: false },
+    ],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-02-20T14:30:00Z',
+  },
+  {
+    id: '3',
+    name: 'Pro Plan',
+    description: 'Best for serious learners and families',
+    monthlyPrice: 49,
+    yearlyPrice: 490,
+    status: PlanStatus.ACTIVE,
+    maxLearners: 10,
+    maxLessonsPerMonth: null, // unlimited
+    subscriberCount: 789,
+    features: [
+      { name: 'Advanced AI with GPT-4', enabled: true },
+      { name: 'Priority Email & Chat Support', enabled: true },
+      { name: 'Advanced Progress Tracking', enabled: true },
+      { name: 'Personalized Learning Paths', enabled: true },
+      { name: 'Parent Dashboard', enabled: true },
+      { name: 'Advanced Analytics', enabled: true },
+    ],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-03-10T09:15:00Z',
+  },
+  {
+    id: '4',
+    name: 'Enterprise Plan',
+    description: 'For schools and large organizations',
+    monthlyPrice: 199,
+    yearlyPrice: 1990,
+    status: PlanStatus.ACTIVE,
+    maxLearners: null, // unlimited
+    maxLessonsPerMonth: null, // unlimited
+    subscriberCount: 45,
+    features: [
+      { name: 'Advanced AI with Custom Training', enabled: true },
+      { name: '24/7 Dedicated Support', enabled: true },
+      { name: 'Custom Integrations', enabled: true },
+      { name: 'White-label Option', enabled: true },
+      { name: 'Admin Controls & Permissions', enabled: true },
+      { name: 'Advanced Reporting & Analytics', enabled: true },
+    ],
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-01-15T10:00:00Z',
+  },
+  {
+    id: '5',
+    name: 'Student Discount',
+    description: 'Special pricing for verified students',
+    monthlyPrice: 9,
+    yearlyPrice: 90,
+    status: PlanStatus.INACTIVE,
+    maxLearners: 1,
+    maxLessonsPerMonth: 50,
+    subscriberCount: 0,
+    features: [
+      { name: 'Enhanced AI Responses', enabled: true },
+      { name: 'Email Support', enabled: true },
+      { name: 'Progress Tracking', enabled: true },
+      { name: 'Custom Learning Paths', enabled: false },
+    ],
+    createdAt: '2024-02-01T10:00:00Z',
+    updatedAt: '2024-02-01T10:00:00Z',
+  },
+];
+
+export const AVAILABLE_FEATURES = [
+  'Basic AI Responses',
+  'Enhanced AI Responses',
+  'Advanced AI with GPT-4',
+  'Email Support',
+  'Priority Email & Chat Support',
+  '24/7 Dedicated Support',
+  'Progress Tracking',
+  'Advanced Progress Tracking',
+  'Custom Learning Paths',
+  'Personalized Learning Paths',
+  'Parent Dashboard',
+  'Advanced Analytics',
+  'Advanced Reporting & Analytics',
+  'Custom Integrations',
+  'White-label Option',
+  'Admin Controls & Permissions',
+];

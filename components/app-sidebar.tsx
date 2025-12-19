@@ -8,7 +8,6 @@ import {
   DollarSign,
   MessageSquare,
   Settings,
-  CreditCard,
   Sliders,
   BookOpen,
   Upload,
@@ -56,11 +55,6 @@ const menuItems = [
     title: 'Configure LLM',
     url: ROUTES.DASHBOARD.CONFIGURE_LLM,
     icon: Settings,
-  },
-  {
-    title: 'Subscription Management',
-    url: ROUTES.DASHBOARD.SUBSCRIPTION_MANAGEMENT,
-    icon: CreditCard,
   },
   {
     title: 'Other Settings',
