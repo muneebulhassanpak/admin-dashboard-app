@@ -11,6 +11,7 @@ import { useUserManagement } from '../hooks';
 import { UserTable } from './UserTable';
 import { Button } from '@/components/ui/button';
 import { AddParentLearnerModal } from '@/features/parent-learner-management/components';
+import { BadgePlus } from 'lucide-react';
 
 export function UserManagementClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,6 +72,7 @@ export function UserManagementClient() {
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
+          <BadgePlus/>
           Add Parent / Learner
         </Button>
       </div>

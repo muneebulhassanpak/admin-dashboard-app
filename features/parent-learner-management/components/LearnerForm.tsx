@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PasswordInput } from '@/components/ui/password-input';
 import type {
   CreateLearnerDto,
   ParentOption,
@@ -332,7 +333,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <PasswordInput placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
