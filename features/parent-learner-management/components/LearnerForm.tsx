@@ -23,6 +23,8 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PasswordInput } from '@/components/ui/password-input';
+import { DatePicker } from '@/components/ui/date-picker';
+import { format } from 'date-fns';
 import type {
   CreateLearnerDto,
   ParentOption,
@@ -210,7 +212,13 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
               <FormItem>
                 <FormLabel>Date of Birth</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <DatePicker
+                    value={field.value ? new Date(field.value) : undefined}
+                    onChange={(date) => {
+                      field.onChange(date ? format(date, 'yyyy-MM-dd') : '');
+                    }}
+                    placeholder="Select date of birth"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
