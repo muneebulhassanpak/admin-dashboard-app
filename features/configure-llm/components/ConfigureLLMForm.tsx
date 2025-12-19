@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Save, RotateCcw, Info, Sparkles, Cpu, Sliders, MessageSquare, Search, Check, Loader2 } from 'lucide-react';
+import { Save, RotateCcw, Info, Sparkles, Cpu, Sliders, MessageSquare, Search, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -613,12 +613,8 @@ export function ConfigureLLMForm({
               <RotateCcw className="mr-2 h-4 w-4" />
               Reset
             </Button>
-            <Button type="submit" disabled={!hasChanges || saving} size="lg">
-              {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
+            <Button type="submit" disabled={!hasChanges || saving} size="lg" loading={saving}>
+                <Save className="h-4 w-4" />
               Save Configuration
             </Button>
           </div>

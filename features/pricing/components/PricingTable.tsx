@@ -28,7 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Trash2, Users, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Users, CheckCircle, XCircle, Loader } from 'lucide-react';
 import type { PricingPlan } from '../types';
 import { PlanStatus } from '../types';
 import { TableSkeleton } from '@/components/skeletons';
@@ -163,7 +163,7 @@ export function PricingTable({
           if (isUpdating) {
             return (
               <div className="w-[90px]">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin" />
               </div>
             );
           }
@@ -194,12 +194,9 @@ export function PricingTable({
                     size="sm"
                     className="h-8 w-8 p-0"
                     disabled={isDeleting || isUpdating}
+                    loading={isDeleting}
                   >
-                    {isDeleting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <MoreHorizontal className="h-4 w-4" />
-                    )}
+                      <MoreHorizontal className="h-4 w-4" />               
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

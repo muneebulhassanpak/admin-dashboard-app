@@ -34,7 +34,6 @@ import {
   Pencil,
   Trash2,
   Download,
-  Loader2,
   FileText,
   ChevronLeft,
   ChevronRight,
@@ -196,12 +195,9 @@ export function KnowledgeBaseTable({
                     size="sm"
                     className="h-8 w-8 p-0"
                     disabled={isDeleting || isUpdating}
-                  >
-                    {isDeleting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <MoreHorizontal className="h-4 w-4" />
-                    )}
+                    loading={isDeleting}
+                  >  
+                  <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">

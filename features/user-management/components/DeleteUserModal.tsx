@@ -14,7 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Loader2 } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import type { User } from '../types';
 import { UserType } from '../types';
 
@@ -67,7 +67,7 @@ export function DeleteUserModal({
           >
             {isDeleting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
                 Deleting...
               </>
             ) : (

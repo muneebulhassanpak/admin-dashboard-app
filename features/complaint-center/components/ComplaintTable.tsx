@@ -1,8 +1,3 @@
-/**
- * Complaint Table Component
- * Built with TanStack Table for optimal performance
- */
-
 'use client';
 
 import { useMemo } from 'react';
@@ -36,7 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, Eye, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Search, MoreHorizontal, Eye, CheckCircle, XCircle, Loader } from 'lucide-react';
 import type { Complaint, ComplaintStatus } from '../types';
 import { ComplaintStatus as ComplaintStatusEnum, ComplaintPriority } from '../types';
 import { STATUS_FILTER_OPTIONS } from '../utils/constants';
@@ -195,7 +190,7 @@ export function ComplaintTable({
           if (isUpdating) {
             return (
               <div className="w-[100px] flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin" />
               </div>
             );
           }
@@ -228,7 +223,7 @@ export function ComplaintTable({
                     disabled={isDeleting || isUpdating}
                   >
                     {isDeleting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader className="h-4 w-4 animate-spin" />
                     ) : (
                       <MoreHorizontal className="h-4 w-4" />
                     )}
