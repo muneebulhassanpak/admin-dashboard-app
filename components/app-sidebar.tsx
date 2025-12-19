@@ -26,8 +26,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { ROUTES } from '@/lib/routes';
 
 const menuItems = [
@@ -85,24 +83,28 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="border-b px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
-            <span className="text-xl font-bold">A</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold tracking-tight">
-              Admin Portal
-            </span>
-            <span className="text-xs text-muted-foreground">Dashboard v1.0</span>
-          </div>
-        </div>
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader className="h-16 border-b">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild className="data-[state=collapsed]:justify-center">
+              <Link href={ROUTES.DASHBOARD.ROOT} className="flex items-center gap-2">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm transition-all">
+                  <span className="text-lg font-bold">A</span>
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Admin Portal</span>
+                  <span className="truncate text-xs text-muted-foreground">Dashboard v1.0</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="px-3 py-2">
+      <SidebarContent className="transition-all duration-200">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu>
               {menuItems.map((item) => {
                 const isActive = pathname === item.url;
                 return (
@@ -111,11 +113,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       asChild
                       tooltip={item.title}
                       isActive={isActive}
-                      className="group"
+                      className="transition-all duration-200"
                     >
                       <Link href={item.url}>
-                        <item.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
-                        <span>{item.title}</span>
+                        <item.icon className="transition-transform duration-200" />
+                        <span className="transition-opacity duration-200">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -125,29 +127,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="border-t px-3 py-3">
-        <div className="space-y-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start hover:bg-accent"
-            asChild
-          >
-            <Link href={ROUTES.DASHBOARD.SETTINGS}>
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start hover:bg-destructive/10 hover:text-destructive"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
-          </Button>
-        </div>
+      <SidebarFooter className="transition-all duration-200">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Settings" className="transition-all duration-200">
+              <Link href={ROUTES.DASHBOARD.SETTINGS}>
+                <Settings className="transition-transform duration-200" />
+                <span className="transition-opacity duration-200">Settings</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} tooltip="Logout" className="transition-all duration-200">
+              <LogOut className="transition-transform duration-200" />
+              <span className="transition-opacity duration-200">Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,7 +1,3 @@
-/**
- * User Management Table Component
- * Refactored to use TanStack Table
- */
 
 'use client';
 
@@ -31,7 +27,7 @@ import {
   Trash2,
   Pencil,
   Search,
-  Loader2,
+  Loader,
 } from 'lucide-react';
 import type { User } from '../types';
 import { UserType } from '../types';
@@ -166,7 +162,7 @@ export function UserTable({
           return (
             <div className="flex items-center gap-2">
               {isToggling ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin" />
               ) : (
                 <Switch
                   checked={user.status}
@@ -206,7 +202,7 @@ export function UserTable({
                 disabled={isDeleting}
               >
                 {isDeleting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader className="h-4 w-4 animate-spin" />
                 ) : (
                   <Trash2 className="h-4 w-4" />
                 )}

@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Save, AlertTriangle, Settings2, Loader2 } from 'lucide-react';
+import { Save, AlertTriangle, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -209,12 +209,9 @@ export function OtherSettingsForm({
               type="submit"
               disabled={!hasChanges || saving}
               size="lg"
+              loading={saving}
             >
-              {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
+                <Save className="h-4 w-4" /> 
               Update Disclaimers
             </Button>
           </div>
