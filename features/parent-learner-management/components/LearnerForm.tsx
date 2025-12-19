@@ -1,0 +1,335 @@
+'use client';
+
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import type {
+  CreateLearnerDto,
+  ParentOption,
+  LevelOption,
+  SubjectOption,
+  SchoolOption,
+} from '../types';
+
+// Validation schema
+const learnerSchema = z.object({
+  parentId: z.string().min(1, 'Parent is required'),
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  level: z.string().min(1, 'Level is required'),
+  dateOfBirth: z.string().min(1, 'Date of birth is required'),
+  subjects: z.array(z.string()).min(1, 'At least one subject is required'),
+  school: z.string().min(1, 'School is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+interface LearnerFormProps {
+  onSubmit: (data: CreateLearnerDto) => void;
+  loading: boolean;
+  parents: ParentOption[];
+  levels: LevelOption[];
+  schools: SchoolOption[];
+  getSubjectsByLevel: (levelId: string) => SubjectOption[];
+  loadingParents: boolean;
+  loadingLevels: boolean;
+  loadingSchools: boolean;
+}
+
+type LearnerFormValues = Omit<CreateLearnerDto, 'profilePicture'>;
+
+export function LearnerForm({
+  onSubmit,
+  loading,
+  parents,
+  levels,
+  schools,
+  getSubjectsByLevel,
+  loadingParents,
+  loadingLevels,
+  loadingSchools,
+}: LearnerFormProps) {
+  const [selectedLevel, setSelectedLevel] = useState<string>('');
+  const [profilePicture, setProfilePicture] = useState<File | undefined>();
+
+  const form = useForm<LearnerFormValues>({
+    resolver: zodResolver(learnerSchema),
+    defaultValues: {
+      parentId: '',
+      firstName: '',
+      lastName: '',
+      username: '',
+      level: '',
+      dateOfBirth: '',
+      subjects: [],
+      school: '',
+      password: '',
+    },
+  });
+
+  const handleFormSubmit = (data: LearnerFormValues) => {
+    onSubmit({ ...data, profilePicture });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePicture(file);
+    }
+  };
+
+  const availableSubjects = selectedLevel ? getSubjectsByLevel(selectedLevel) : [];
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="parentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Parent</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl className='w-full'>
+                  <SelectTrigger>
+                    <SelectValue placeholder={loadingParents ? 'Loading parents...' : 'Select a parent'} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {parents.map((parent) => (
+                    <SelectItem key={parent.value} value={parent.value}>
+                      {parent.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Jane" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="level"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Level</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setSelectedLevel(value);
+                    form.setValue('subjects', []);
+                  }}
+                  defaultValue={field.value}
+                >
+                  <FormControl className='w-full'>
+                    <SelectTrigger>
+                      <SelectValue placeholder={loadingLevels ? 'Loading levels...' : 'Select a level'} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {levels.map((level) => (
+                      <SelectItem key={level.value} value={level.value}>
+                        {level.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="subjects"
+          render={() => (
+            <FormItem>
+              <FormLabel>Subjects</FormLabel>
+              <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-3">
+                {!selectedLevel && (
+                  <p className="text-sm text-muted-foreground">
+                    Please select a level first
+                  </p>
+                )}
+                {selectedLevel && availableSubjects.length === 0 && (
+                  <p className="text-sm text-muted-foreground">
+                    No subjects available for this level
+                  </p>
+                )}
+                {selectedLevel &&
+                  availableSubjects.map((subject) => (
+                    <FormField
+                      key={subject.value}
+                      control={form.control}
+                      name="subjects"
+                      render={({ field }) => {
+                        return (
+                          <FormItem
+                            key={subject.value}
+                            className="flex flex-row items-start space-x-3 space-y-0"
+                          >
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(subject.value)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value, subject.value])
+                                    : field.onChange(
+                                        field.value?.filter(
+                                          (value) => value !== subject.value
+                                        )
+                                      );
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {subject.label}
+                            </FormLabel>
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  ))}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="school"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>School</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl className='w-full'>
+                  <SelectTrigger>
+                    <SelectValue placeholder={loadingSchools ? 'Loading schools...' : 'Select a school'} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {schools.map((school) => (
+                    <SelectItem key={school.value} value={school.value}>
+                      {school.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="janedoe123" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormItem>
+          <FormLabel>Profile Picture (Optional)</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </FormControl>
+        </FormItem>
+
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Adding Learner...' : 'Add Learner'}
+        </Button>
+      </form>
+    </Form>
+  );
+}

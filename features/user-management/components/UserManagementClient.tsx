@@ -5,12 +5,16 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useUserManagement } from '../hooks';
 import { UserTable } from './UserTable';
+import { Button } from '@/components/ui/button';
+import { AddParentLearnerModal } from '@/features/parent-learner-management/components';
 
 export function UserManagementClient() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const {
     users,
     loading,
@@ -23,6 +27,7 @@ export function UserManagementClient() {
     setPage,
     deleteUser,
     toggleUserStatus,
+    refreshUsers,
   } = useUserManagement();
 
   // Handle errors with toast notifications
@@ -58,11 +63,16 @@ export function UserManagementClient() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">User Management</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Manage parent accounts and their learners
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">User Management</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage parent accounts and their learners
+          </p>
+        </div>
+        <Button onClick={() => setIsModalOpen(true)}>
+          Add Parent / Learner
+        </Button>
       </div>
 
       <UserTable
@@ -76,6 +86,12 @@ export function UserManagementClient() {
         onToggleStatus={handleToggleStatus}
         pagination={pagination}
         onPageChange={setPage}
+      />
+
+      <AddParentLearnerModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onSuccess={refreshUsers}
       />
     </div>
   );
