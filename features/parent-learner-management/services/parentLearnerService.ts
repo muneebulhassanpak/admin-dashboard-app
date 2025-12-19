@@ -20,6 +20,8 @@ import {
   MOCK_SCHOOLS,
   delay,
 } from '../utils';
+import { mockDataStore } from '@/lib/mockDataStore';
+import { User, UserType } from '@/features/user-management/types';
 
 export const parentLearnerService = {
   /**
@@ -83,6 +85,21 @@ export const parentLearnerService = {
       createdAt: new Date().toISOString(),
     };
 
+    // Add to mockDataStore as a User for the User Management table
+    const userRecord: User = {
+      id: newParent.id,
+      email: newParent.email,
+      username: `${newParent.firstName} ${newParent.lastName}`,
+      userType: UserType.PARENT,
+      level: null,
+      paid: false,
+      plan: 'Free',
+      status: true,
+      parentId: null,
+      createdAt: newParent.createdAt,
+    };
+    mockDataStore.addUser(userRecord);
+
     return newParent;
   },
 
@@ -122,6 +139,23 @@ export const parentLearnerService = {
       school: dto.school,
       createdAt: new Date().toISOString(),
     };
+
+    // Add to mockDataStore as a User for the User Management table
+    // Find parent to get their email for the learner's email
+    const parentEmail = dto.parentId.split('@')[0]; // Just use parentId as base for demo
+    const userRecord: User = {
+      id: newLearner.id,
+      email: `${newLearner.username}@learner.com`,
+      username: newLearner.username,
+      userType: UserType.LEARNER,
+      level: newLearner.level,
+      paid: false,
+      plan: 'Free',
+      status: true,
+      parentId: newLearner.parentId,
+      createdAt: newLearner.createdAt,
+    };
+    mockDataStore.addUser(userRecord);
 
     return newLearner;
   },
