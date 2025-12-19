@@ -1,10 +1,18 @@
 /**
  * User Management Table Component
+ * Refactored to use TanStack Table
  */
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getExpandedRowModel,
+  flexRender,
+  type ColumnDef,
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -59,21 +67,10 @@ export function UserTable({
   pagination,
   onPageChange,
 }: UserTableProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [deleteModal, setDeleteModal] = useState<{
     open: boolean;
     user: User | null;
   }>({ open: false, user: null });
-
-  const toggleRow = (userId: string) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(userId)) {
-      newExpanded.delete(userId);
-    } else {
-      newExpanded.add(userId);
-    }
-    setExpandedRows(newExpanded);
-  };
 
   const handleDeleteClick = (user: User) => {
     setDeleteModal({ open: true, user });
@@ -81,55 +78,91 @@ export function UserTable({
 
   const handleDeleteConfirm = async () => {
     if (deleteModal.user) {
-      try {
-        await onDeleteUser(deleteModal.user.id);
-        setDeleteModal({ open: false, user: null });
-      } catch (error) {
-        // Error is handled in the hook
-      }
+      await onDeleteUser(deleteModal.user.id);
+      setDeleteModal({ open: false, user: null });
     }
   };
 
-  const renderUserRow = (user: User, isChild = false) => {
-    const hasChildren = user.children && user.children.length > 0;
-    const isExpanded = expandedRows.has(user.id);
-    const isDeleting = deleting === user.id;
-    const isToggling = toggling === user.id;
+  const columns = useMemo<ColumnDef<User>[]>(
+    () => [
+      {
+        id: 'expander',
+        header: () => null,
+        cell: ({ row }) => {
+          const hasChildren = row.original.children && row.original.children.length > 0;
+          const isChild = row.depth > 0;
 
-    return (
-      <>
-        <TableRow key={user.id} className={isChild ? 'bg-muted/50' : ''}>
-          <TableCell className="w-10">
-            {!isChild && hasChildren && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleRow(user.id)}
-                className="h-8 w-8 p-0"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-          </TableCell>
-          <TableCell className="font-medium">{user.email}</TableCell>
-          <TableCell>{user.username}</TableCell>
-          <TableCell>
-            <Badge variant={user.userType === UserType.PARENT ? 'default' : 'secondary'}>
-              {user.userType}
+          if (isChild || !hasChildren) return null;
+
+          return (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={row.getToggleExpandedHandler()}
+              className="h-8 w-8 p-0"
+            >
+              {row.getIsExpanded() ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+          );
+        },
+        size: 40,
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ getValue }) => (
+          <span className="font-medium">{getValue() as string}</span>
+        ),
+      },
+      {
+        accessorKey: 'username',
+        header: 'Username',
+      },
+      {
+        accessorKey: 'userType',
+        header: 'Type',
+        cell: ({ getValue }) => {
+          const type = getValue() as UserType;
+          return (
+            <Badge variant={type === UserType.PARENT ? 'default' : 'secondary'}>
+              {type}
             </Badge>
-          </TableCell>
-          <TableCell>{user.level || '-'}</TableCell>
-          <TableCell>
-            <Badge variant={user.paid ? 'default' : 'outline'}>
-              {user.paid ? 'Yes' : 'No'}
+          );
+        },
+      },
+      {
+        accessorKey: 'level',
+        header: 'Level',
+        cell: ({ getValue }) => (getValue() as string) || '-',
+      },
+      {
+        accessorKey: 'paid',
+        header: 'Paid',
+        cell: ({ getValue }) => {
+          const paid = getValue() as boolean;
+          return (
+            <Badge variant={paid ? 'default' : 'outline'}>
+              {paid ? 'Yes' : 'No'}
             </Badge>
-          </TableCell>
-          <TableCell>{user.plan}</TableCell>
-          <TableCell>
+          );
+        },
+      },
+      {
+        accessorKey: 'plan',
+        header: 'Plan',
+      },
+      {
+        id: 'status',
+        header: 'Status',
+        cell: ({ row }) => {
+          const user = row.original;
+          const isToggling = toggling === user.id;
+
+          return (
             <div className="flex items-center gap-2">
               {isToggling ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -144,9 +177,18 @@ export function UserTable({
                 {user.status ? 'Active' : 'Inactive'}
               </span>
             </div>
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-2">
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: () => <div className="text-right">Actions</div>,
+        cell: ({ row }) => {
+          const user = row.original;
+          const isDeleting = deleting === user.id;
+
+          return (
+            <div className="flex items-center justify-end gap-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -169,18 +211,21 @@ export function UserTable({
                 )}
               </Button>
             </div>
-          </TableCell>
-        </TableRow>
+          );
+        },
+      },
+    ],
+    [deleting, toggling, onToggleStatus]
+  );
 
-        {/* Render children if expanded */}
-        {!isChild && isExpanded && hasChildren && (
-          <>
-            {user.children!.map((child) => renderUserRow(child, true))}
-          </>
-        )}
-      </>
-    );
-  };
+  const table = useReactTable({
+    data: users,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: (row) => row.children,
+    getRowId: (row) => row.id,
+  });
 
   return (
     <div className="space-y-4">
@@ -199,33 +244,50 @@ export function UserTable({
       <div className="rounded-lg border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-10"></TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Level</TableHead>
-              <TableHead>Paid</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center">
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                 </TableCell>
               </TableRow>
-            ) : users.length === 0 ? (
+            ) : table.getRowModel().rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
                   No users found
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => renderUserRow(user))
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className={row.depth > 0 ? 'bg-muted/50' : ''}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
