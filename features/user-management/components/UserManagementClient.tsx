@@ -1,0 +1,82 @@
+/**
+ * User Management Client Component
+ * Main component that integrates the hook and table
+ */
+
+'use client';
+
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { useUserManagement } from '../hooks';
+import { UserTable } from './UserTable';
+
+export function UserManagementClient() {
+  const {
+    users,
+    loading,
+    deleting,
+    toggling,
+    error,
+    pagination,
+    searchQuery,
+    setSearchQuery,
+    setPage,
+    deleteUser,
+    toggleUserStatus,
+  } = useUserManagement();
+
+  // Handle errors with toast notifications
+  useEffect(() => {
+    if (error) {
+      toast.error(error, {
+        position: 'top-center',
+      });
+    }
+  }, [error]);
+
+  const handleDeleteUser = async (id: string) => {
+    try {
+      await deleteUser(id);
+      toast.success('User deleted successfully', {
+        position: 'top-center',
+      });
+    } catch (err) {
+      // Error is already handled in the hook and shown via useEffect
+    }
+  };
+
+  const handleToggleStatus = async (id: string) => {
+    try {
+      await toggleUserStatus(id);
+      toast.success('User status updated successfully', {
+        position: 'top-center',
+      });
+    } catch (err) {
+      // Error is already handled in the hook and shown via useEffect
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold">User Management</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage parent accounts and their learners
+        </p>
+      </div>
+
+      <UserTable
+        users={users}
+        loading={loading}
+        deleting={deleting}
+        toggling={toggling}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onDeleteUser={handleDeleteUser}
+        onToggleStatus={handleToggleStatus}
+        pagination={pagination}
+        onPageChange={setPage}
+      />
+    </div>
+  );
+}
