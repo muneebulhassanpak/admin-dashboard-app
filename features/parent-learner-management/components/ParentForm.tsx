@@ -5,10 +5,10 @@
 
 'use client';
 
+import { forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -31,10 +31,13 @@ const parentSchema = z.object({
 
 interface ParentFormProps {
   onSubmit: (data: CreateParentDto) => void;
-  loading: boolean;
 }
 
-export function ParentForm({ onSubmit, loading }: ParentFormProps) {
+export interface ParentFormRef {
+  submit: () => void;
+}
+
+export const ParentForm = forwardRef<ParentFormRef, ParentFormProps>(({ onSubmit }, ref) => {
   const form = useForm<CreateParentDto>({
     resolver: zodResolver(parentSchema),
     defaultValues: {
@@ -46,9 +49,15 @@ export function ParentForm({ onSubmit, loading }: ParentFormProps) {
     },
   });
 
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      form.handleSubmit(onSubmit)();
+    },
+  }));
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -120,11 +129,7 @@ export function ParentForm({ onSubmit, loading }: ParentFormProps) {
             </FormItem>
           )}
         />
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Adding Parent...' : 'Add Parent'}
-        </Button>
-      </form>
+      </div>
     </Form>
   );
-}
+});

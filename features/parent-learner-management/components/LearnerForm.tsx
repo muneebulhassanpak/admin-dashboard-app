@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -45,7 +44,6 @@ const learnerSchema = z.object({
 
 interface LearnerFormProps {
   onSubmit: (data: CreateLearnerDto) => void;
-  loading: boolean;
   parents: ParentOption[];
   levels: LevelOption[];
   schools: SchoolOption[];
@@ -55,11 +53,15 @@ interface LearnerFormProps {
   loadingSchools: boolean;
 }
 
+export interface LearnerFormRef {
+  submit: () => void;
+  getProfilePicture: () => File | undefined;
+}
+
 type LearnerFormValues = Omit<CreateLearnerDto, 'profilePicture'>;
 
-export function LearnerForm({
+export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   onSubmit,
-  loading,
   parents,
   levels,
   schools,
@@ -67,7 +69,7 @@ export function LearnerForm({
   loadingParents,
   loadingLevels,
   loadingSchools,
-}: LearnerFormProps) {
+}, ref) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [profilePicture, setProfilePicture] = useState<File | undefined>();
 
@@ -97,11 +99,18 @@ export function LearnerForm({
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      form.handleSubmit(handleFormSubmit)();
+    },
+    getProfilePicture: () => profilePicture,
+  }));
+
   const availableSubjects = selectedLevel ? getSubjectsByLevel(selectedLevel) : [];
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+      <div className="space-y-4">
         <FormField
           control={form.control}
           name="parentId"
@@ -325,11 +334,7 @@ export function LearnerForm({
             />
           </FormControl>
         </FormItem>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? 'Adding Learner...' : 'Add Learner'}
-        </Button>
-      </form>
+      </div>
     </Form>
   );
-}
+});
