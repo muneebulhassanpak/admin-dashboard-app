@@ -1,7 +1,3 @@
-/**
- * User Management Table Component
- * Refactored to use TanStack Table
- */
 
 'use client';
 
