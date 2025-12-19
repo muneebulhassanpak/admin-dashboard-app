@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, forwardRef, useImperativeHandle } from 'react';
+import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import type {
   CreateLearnerDto,
   ParentOption,
@@ -55,7 +56,6 @@ interface LearnerFormProps {
 
 export interface LearnerFormRef {
   submit: () => void;
-  getProfilePicture: () => File | undefined;
 }
 
 type LearnerFormValues = Omit<CreateLearnerDto, 'profilePicture'>;
@@ -71,7 +71,6 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   loadingSchools,
 }, ref) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('');
-  const [profilePicture, setProfilePicture] = useState<File | undefined>();
 
   const form = useForm<LearnerFormValues>({
     resolver: zodResolver(learnerSchema),
@@ -89,21 +88,13 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   });
 
   const handleFormSubmit = (data: LearnerFormValues) => {
-    onSubmit({ ...data, profilePicture });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfilePicture(file);
-    }
+    onSubmit(data as CreateLearnerDto);
   };
 
   useImperativeHandle(ref, () => ({
     submit: () => {
       form.handleSubmit(handleFormSubmit)();
     },
-    getProfilePicture: () => profilePicture,
   }));
 
   const availableSubjects = selectedLevel ? getSubjectsByLevel(selectedLevel) : [];
@@ -220,14 +211,14 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
           render={() => (
             <FormItem>
               <FormLabel>Subjects</FormLabel>
-              <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-3">
+              <div className="flex flex-wrap gap-4 max-h-40 overflow-y-auto border rounded-md p-3">
                 {!selectedLevel && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground w-full">
                     Please select a level first
                   </p>
                 )}
                 {selectedLevel && availableSubjects.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground w-full">
                     No subjects available for this level
                   </p>
                 )}
@@ -241,7 +232,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
                         return (
                           <FormItem
                             key={subject.value}
-                            className="flex flex-row items-start space-x-3 space-y-0"
+                            className="flex flex-row items-center space-x-2 space-y-0"
                           >
                             <FormControl>
                               <Checkbox
@@ -257,7 +248,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
                                 }}
                               />
                             </FormControl>
-                            <FormLabel className="font-normal">
+                            <FormLabel className="font-normal cursor-pointer">
                               {subject.label}
                             </FormLabel>
                           </FormItem>
@@ -323,17 +314,6 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
             </FormItem>
           )}
         />
-
-        <FormItem>
-          <FormLabel>Profile Picture (Optional)</FormLabel>
-          <FormControl>
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </FormControl>
-        </FormItem>
       </div>
     </Form>
   );

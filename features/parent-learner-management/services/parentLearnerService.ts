@@ -109,13 +109,6 @@ export const parentLearnerService = {
       throw new Error('At least one subject is required');
     }
 
-    // Simulate profile picture upload
-    let profilePictureUrl: string | undefined;
-    if (dto.profilePicture) {
-      // In a real app, this would upload to a server
-      profilePictureUrl = URL.createObjectURL(dto.profilePicture);
-    }
-
     // Create new learner
     const newLearner: Learner = {
       id: crypto.randomUUID(),
@@ -127,7 +120,6 @@ export const parentLearnerService = {
       dateOfBirth: dto.dateOfBirth,
       subjects: dto.subjects,
       school: dto.school,
-      profilePicture: profilePictureUrl,
       createdAt: new Date().toISOString(),
     };
 
