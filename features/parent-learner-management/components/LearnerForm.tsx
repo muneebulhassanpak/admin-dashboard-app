@@ -71,6 +71,7 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
   loadingSchools,
 }, ref) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('');
+  const [loadingSubjects, setLoadingSubjects] = useState(false);
 
   const form = useForm<LearnerFormValues>({
     resolver: zodResolver(learnerSchema),
@@ -86,6 +87,17 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
       password: '',
     },
   });
+
+  // Simulate fetching subjects when level changes
+  useEffect(() => {
+    if (selectedLevel) {
+      setLoadingSubjects(true);
+      const timer = setTimeout(() => {
+        setLoadingSubjects(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedLevel]);
 
   const handleFormSubmit = (data: LearnerFormValues) => {
     onSubmit(data as CreateLearnerDto);
@@ -217,12 +229,24 @@ export const LearnerForm = forwardRef<LearnerFormRef, LearnerFormProps>(({
                     Please select a level first
                   </p>
                 )}
-                {selectedLevel && availableSubjects.length === 0 && (
+                {loadingSubjects && (
+                  <>
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-5 w-28" />
+                    <Skeleton className="h-5 w-36" />
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-5 w-30" />
+                    <Skeleton className="h-5 w-28" />
+                    <Skeleton className="h-5 w-32" />
+                  </>
+                )}
+                {!loadingSubjects && selectedLevel && availableSubjects.length === 0 && (
                   <p className="text-sm text-muted-foreground w-full">
                     No subjects available for this level
                   </p>
                 )}
-                {selectedLevel &&
+                {!loadingSubjects && selectedLevel &&
                   availableSubjects.map((subject) => (
                     <FormField
                       key={subject.value}
