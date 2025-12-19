@@ -36,6 +36,7 @@ import {
 import type { User } from '../types';
 import { UserType } from '../types';
 import { DeleteUserModal } from './DeleteUserModal';
+import { TableSkeleton } from '@/components/skeletons';
 
 interface UserTableProps {
   users: User[];
@@ -259,37 +260,35 @@ export function UserTable({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  No users found
-                </TableCell>
-              </TableRow>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className={row.depth > 0 ? 'bg-muted/50' : ''}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+          {loading ? (
+            <TableSkeleton columns={columns.length} rows={5} showHeader={false} />
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                    No users found
+                  </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className={row.depth > 0 ? 'bg-muted/50' : ''}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          )}
         </Table>
       </div>
 

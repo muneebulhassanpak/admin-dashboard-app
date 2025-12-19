@@ -40,6 +40,7 @@ import { Search, MoreHorizontal, Eye, CheckCircle, XCircle, Loader2 } from 'luci
 import type { Complaint, ComplaintStatus } from '../types';
 import { ComplaintStatus as ComplaintStatusEnum, ComplaintPriority } from '../types';
 import { STATUS_FILTER_OPTIONS } from '../utils/constants';
+import { TableSkeleton } from '@/components/skeletons';
 
 interface ComplaintTableProps {
   complaints: Complaint[];
@@ -334,34 +335,37 @@ export function ComplaintTable({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    No complaints found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
+            {loading ? (
+              <TableSkeleton
+                columns={columns.length}
+                rows={5}
+                showHeader={false}
+                columnWidths={['w-[100px]', 'w-[250px]', 'w-[200px]', 'w-[120px]', 'w-[180px]', 'w-[100px]', 'w-[60px]']}
+              />
+            ) : (
+              <TableBody>
+                {table.getRowModel().rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      No complaints found
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
+                ) : (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            )}
           </table>
         </div>
       </div>
