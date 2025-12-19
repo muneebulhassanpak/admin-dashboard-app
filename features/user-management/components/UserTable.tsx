@@ -182,13 +182,13 @@ export function UserTable({
       },
       {
         id: 'actions',
-        header: () => <div className="text-right">Actions</div>,
+        header: 'Actions',
         cell: ({ row }) => {
           const user = row.original;
           const isDeleting = deleting === user.id;
 
           return (
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
