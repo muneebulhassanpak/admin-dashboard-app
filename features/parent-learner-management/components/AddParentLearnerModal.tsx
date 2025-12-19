@@ -20,6 +20,7 @@ import { ParentForm, type ParentFormRef } from './ParentForm';
 import { LearnerForm, type LearnerFormRef } from './LearnerForm';
 import { useAddParentLearner } from '../hooks';
 import type { CreateParentDto, CreateLearnerDto } from '../types';
+import { Loader } from 'lucide-react';
 
 interface AddParentLearnerModalProps {
   open: boolean;
@@ -133,8 +134,9 @@ export function AddParentLearnerModal({
                 onClick={() => parentFormRef.current?.submit()}
                 className="w-full"
                 disabled={addingParent}
+                loading={addingParent}
               >
-                {addingParent ? 'Adding Parent...' : 'Add Parent'}
+                Add Parent
               </Button>
             )}
             {activeTab === 'learner' && (
@@ -142,8 +144,9 @@ export function AddParentLearnerModal({
                 onClick={() => learnerFormRef.current?.submit()}
                 className="w-full"
                 disabled={addingLearner}
+                loading={addingLearner}
               >
-                {addingLearner ? 'Adding Learner...' : 'Add Learner'}
+                Add Learner
               </Button>
             )}
           </div>
