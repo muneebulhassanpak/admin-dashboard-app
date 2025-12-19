@@ -16,8 +16,8 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar variant='floating' />
-      <SidebarInset className='p-2 pr-0 h-screen'>
-        <div className="flex flex-col h-full rounded-xl border bg-card shadow-sm">
+      <SidebarInset className='p-2 h-screen'>
+        <div className="flex flex-col h-full rounded-xl border bg-card shadow-sm overflow-hidden">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-card">
             <SidebarTrigger className="-ml-1" />
             <Separator
