@@ -1,8 +1,3 @@
-/**
- * User Management Client Component
- * Main component that integrates the hook and table
- */
-
 'use client';
 
 import { useEffect, useState } from 'react';

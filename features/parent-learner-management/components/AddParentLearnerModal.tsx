@@ -15,7 +15,6 @@ import { ParentForm, type ParentFormRef } from './ParentForm';
 import { LearnerForm, type LearnerFormRef } from './LearnerForm';
 import { useAddParentLearner } from '../hooks';
 import type { CreateParentDto, CreateLearnerDto } from '../types';
-import { Loader } from 'lucide-react';
 
 interface AddParentLearnerModalProps {
   open: boolean;
