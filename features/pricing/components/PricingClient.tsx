@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { usePricing } from '../hooks';
 import { PricingTable } from './PricingTable';
 import type { PricingPlan } from '../types';
@@ -79,7 +80,7 @@ export function PricingClient() {
           </p>
         </div>
         <Button onClick={handleCreatePlan}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Create Plan
         </Button>
       </div>
@@ -88,25 +89,41 @@ export function PricingClient() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="rounded-lg border p-4">
           <p className="text-sm text-muted-foreground">Total Plans</p>
-          <p className="text-2xl font-bold mt-1">{plans.length}</p>
+          {loading ? (
+            <Skeleton className="h-8 w-12 mt-1" />
+          ) : (
+            <p className="text-2xl font-bold mt-1">{plans.length}</p>
+          )}
         </div>
         <div className="rounded-lg border p-4">
           <p className="text-sm text-muted-foreground">Active Plans</p>
-          <p className="text-2xl font-bold mt-1">
-            {plans.filter((p) => p.status === 'active').length}
-          </p>
+          {loading ? (
+            <Skeleton className="h-8 w-12 mt-1" />
+          ) : (
+            <p className="text-2xl font-bold mt-1">
+              {plans.filter((p) => p.status === 'active').length}
+            </p>
+          )}
         </div>
         <div className="rounded-lg border p-4">
           <p className="text-sm text-muted-foreground">Total Subscribers</p>
-          <p className="text-2xl font-bold mt-1">
-            {plans.reduce((sum, p) => sum + (p.subscriberCount || 0), 0)}
-          </p>
+          {loading ? (
+            <Skeleton className="h-8 w-20 mt-1" />
+          ) : (
+            <p className="text-2xl font-bold mt-1">
+              {plans.reduce((sum, p) => sum + (p.subscriberCount || 0), 0)}
+            </p>
+          )}
         </div>
         <div className="rounded-lg border p-4">
           <p className="text-sm text-muted-foreground">Monthly Revenue</p>
-          <p className="text-2xl font-bold mt-1">
-            ${plans.reduce((sum, p) => sum + p.monthlyPrice * (p.subscriberCount || 0), 0).toLocaleString()}
-          </p>
+          {loading ? (
+            <Skeleton className="h-8 w-32 mt-1" />
+          ) : (
+            <p className="text-2xl font-bold mt-1">
+              ${plans.reduce((sum, p) => sum + p.monthlyPrice * (p.subscriberCount || 0), 0).toLocaleString()}
+            </p>
+          )}
         </div>
       </div>
 
