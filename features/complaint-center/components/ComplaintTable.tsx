@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -36,6 +36,7 @@ import type { Complaint, ComplaintStatus } from '../types';
 import { ComplaintStatus as ComplaintStatusEnum, ComplaintPriority } from '../types';
 import { STATUS_FILTER_OPTIONS } from '../utils/constants';
 import { TableSkeleton } from '@/components/skeletons';
+import { ComplaintDetailsModal } from './ComplaintDetailsModal';
 
 interface ComplaintTableProps {
   complaints: Complaint[];
@@ -125,6 +126,14 @@ export function ComplaintTable({
   pagination,
   onPageChange,
 }: ComplaintTableProps) {
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+
+  const handleViewDetails = useCallback((complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setDetailsModalOpen(true);
+  }, []);
+
   const columns = useMemo<ColumnDef<Complaint>[]>(
     () => [
       {
@@ -237,7 +246,7 @@ export function ComplaintTable({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleViewDetails(complaint)}>
                     <Eye className="mr-2 h-4 w-4" />
                     View Details
                   </DropdownMenuItem>
@@ -280,7 +289,7 @@ export function ComplaintTable({
         },
       },
     ],
-    [updating, deleting, onUpdateStatus, onDeleteComplaint]
+    [updating, deleting, onUpdateStatus, onDeleteComplaint, handleViewDetails]
   );
 
   const table = useReactTable({
@@ -410,6 +419,13 @@ export function ComplaintTable({
           </div>
         </div>
       )}
+
+      {/* Complaint Details Modal */}
+      <ComplaintDetailsModal
+        complaint={selectedComplaint}
+        open={detailsModalOpen}
+        onOpenChange={setDetailsModalOpen}
+      />
     </div>
   );
 }
