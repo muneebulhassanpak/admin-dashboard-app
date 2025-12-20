@@ -136,6 +136,7 @@ export interface PopularSubjectsProps {
 export interface UseDashboardReturn {
   dashboardData: DashboardData | null;
   loading: boolean;
+  refreshing: boolean;
   error: string | null;
   refetch: () => Promise<void>;
 }

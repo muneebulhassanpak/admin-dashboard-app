@@ -10,10 +10,10 @@ import { PieChart, Pie, Cell } from "recharts";
 import type { TopPricingPlansProps } from "../types";
 
 const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(142 76% 56%)",
-  "hsl(39 100% 57%)",
-  "hsl(261 51% 51%)",
+  "hsl(217 91% 60%)", // Blue for Premium Plan - visible in both light and dark mode
+  "hsl(142 76% 56%)", // Green for Family Plan
+  "hsl(39 100% 57%)", // Orange for Basic Plan
+  "hsl(261 51% 51%)", // Purple for additional plans
 ];
 
 export function PricingDistributionChart({ plans }: TopPricingPlansProps) {
@@ -33,6 +33,28 @@ export function PricingDistributionChart({ plans }: TopPricingPlansProps) {
   }, {} as any);
 
   const totalSubscribers = plans.reduce((acc, plan) => acc + plan.subscribers, 0);
+
+  // Custom label renderer with proper theme support
+  const renderLabel = (props: any) => {
+    const { cx, cy, midAngle, innerRadius, outerRadius, name, percent } = props;
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="hsl(var(--foreground))"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        className="text-xs font-medium"
+      >
+        {`${name}: ${percent ? (percent * 100).toFixed(0) : 0}%`}
+      </text>
+    );
+  };
 
   return (
     <Card>
@@ -81,7 +103,7 @@ export function PricingDistributionChart({ plans }: TopPricingPlansProps) {
               <div key={plan.id} className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="w-3 h-3 rounded-full flex-shrink-0"
                     style={{ backgroundColor: COLORS[index % COLORS.length] }}
                   />
                   <span className="text-sm font-medium">{plan.name}</span>
