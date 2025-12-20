@@ -31,6 +31,8 @@ import {
 import { MoreHorizontal, Pencil, Trash2, Users, CheckCircle, XCircle, Loader } from 'lucide-react';
 import type { PricingPlan } from '../types';
 import { PlanStatus } from '../types';
+import { formatPrice, formatLimit } from '../utils/formatters';
+import { getStatusBadgeVariant } from '../utils/statusHelpers';
 import { TableSkeleton } from '@/components/skeletons';
 
 interface PricingTableProps {
@@ -49,27 +51,6 @@ interface PricingTableProps {
   };
   onPageChange: (page: number) => void;
 }
-
-const getStatusBadgeVariant = (status: PlanStatus) => {
-  switch (status) {
-    case PlanStatus.ACTIVE:
-      return 'default';
-    case PlanStatus.INACTIVE:
-      return 'secondary';
-    case PlanStatus.ARCHIVED:
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const formatPrice = (price: number) => {
-  return price === 0 ? 'Free' : `$${price}`;
-};
-
-const formatLimit = (limit: number | null) => {
-  return limit === null ? 'Unlimited' : limit.toString();
-};
 
 export function PricingTable({
   plans,

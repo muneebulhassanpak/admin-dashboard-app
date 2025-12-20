@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import type { SystemHealthStatusProps, SystemStatus } from "../types";
+import { formatTimeAgo } from "../utils/formatters";
 
 const statusConfig: Record<
   SystemStatus,
@@ -33,18 +34,6 @@ const statusConfig: Record<
     badgeClass: "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
   },
 };
-
-function formatTimeAgo(timestamp: string): string {
-  const now = new Date();
-  const past = new Date(timestamp);
-  const diffMs = now.getTime() - past.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-}
 
 export function SystemHealthStatus({
   healthMetrics,

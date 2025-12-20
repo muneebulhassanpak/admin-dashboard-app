@@ -35,6 +35,8 @@ import { Search, MoreHorizontal, Eye, CheckCircle, XCircle, Loader } from 'lucid
 import type { Complaint, ComplaintStatus } from '../types';
 import { ComplaintStatus as ComplaintStatusEnum, ComplaintPriority } from '../types';
 import { STATUS_FILTER_OPTIONS } from '../utils/constants';
+import { formatDate } from '../utils/formatters';
+import { getStatusBadgeVariant, getStatusLabel, getPriorityBadgeVariant } from '../utils/statusHelpers';
 import { TableSkeleton } from '@/components/skeletons';
 import { ComplaintDetailsModal } from './ComplaintDetailsModal';
 
@@ -57,60 +59,6 @@ interface ComplaintTableProps {
   };
   onPageChange: (page: number) => void;
 }
-
-const getStatusBadgeVariant = (status: ComplaintStatus) => {
-  switch (status) {
-    case ComplaintStatusEnum.PENDING:
-      return 'secondary';
-    case ComplaintStatusEnum.IN_REVIEW:
-      return 'default';
-    case ComplaintStatusEnum.RESOLVED:
-      return 'default';
-    case ComplaintStatusEnum.DISMISSED:
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getStatusLabel = (status: ComplaintStatus) => {
-  switch (status) {
-    case ComplaintStatusEnum.PENDING:
-      return 'Pending';
-    case ComplaintStatusEnum.IN_REVIEW:
-      return 'In Review';
-    case ComplaintStatusEnum.RESOLVED:
-      return 'Resolved';
-    case ComplaintStatusEnum.DISMISSED:
-      return 'Dismissed';
-    default:
-      return status;
-  }
-};
-
-const getPriorityBadgeVariant = (priority: ComplaintPriority) => {
-  switch (priority) {
-    case ComplaintPriority.LOW:
-      return 'outline';
-    case ComplaintPriority.MEDIUM:
-      return 'secondary';
-    case ComplaintPriority.HIGH:
-      return 'default';
-    case ComplaintPriority.URGENT:
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-};
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
 
 export function ComplaintTable({
   complaints,

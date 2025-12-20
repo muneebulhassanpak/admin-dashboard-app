@@ -14,83 +14,14 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, Mail, User, AlertCircle, FileText, Clock, X } from 'lucide-react';
 import type { Complaint, ComplaintStatus, ComplaintPriority } from '../types';
 import { ComplaintStatus as ComplaintStatusEnum, ComplaintPriority as ComplaintPriorityEnum } from '../types';
+import { formatDateTime } from '../utils/formatters';
+import { getStatusBadgeVariant, getStatusLabel, getPriorityBadgeVariant, getPriorityLabel } from '../utils/statusHelpers';
 
 interface ComplaintDetailsModalProps {
   complaint: Complaint | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const getStatusBadgeVariant = (status: ComplaintStatus) => {
-  switch (status) {
-    case ComplaintStatusEnum.PENDING:
-      return 'secondary';
-    case ComplaintStatusEnum.IN_REVIEW:
-      return 'default';
-    case ComplaintStatusEnum.RESOLVED:
-      return 'default';
-    case ComplaintStatusEnum.DISMISSED:
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getStatusLabel = (status: ComplaintStatus) => {
-  switch (status) {
-    case ComplaintStatusEnum.PENDING:
-      return 'Pending';
-    case ComplaintStatusEnum.IN_REVIEW:
-      return 'In Review';
-    case ComplaintStatusEnum.RESOLVED:
-      return 'Resolved';
-    case ComplaintStatusEnum.DISMISSED:
-      return 'Dismissed';
-    default:
-      return status;
-  }
-};
-
-const getPriorityBadgeVariant = (priority: ComplaintPriority) => {
-  switch (priority) {
-    case ComplaintPriorityEnum.LOW:
-      return 'outline';
-    case ComplaintPriorityEnum.MEDIUM:
-      return 'secondary';
-    case ComplaintPriorityEnum.HIGH:
-      return 'default';
-    case ComplaintPriorityEnum.URGENT:
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-};
-
-const getPriorityLabel = (priority: ComplaintPriority) => {
-  switch (priority) {
-    case ComplaintPriorityEnum.LOW:
-      return 'Low';
-    case ComplaintPriorityEnum.MEDIUM:
-      return 'Medium';
-    case ComplaintPriorityEnum.HIGH:
-      return 'High';
-    case ComplaintPriorityEnum.URGENT:
-      return 'Urgent';
-    default:
-      return priority;
-  }
-};
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
 
 export function ComplaintDetailsModal({
   complaint,
@@ -227,15 +158,15 @@ export function ComplaintDetailsModal({
             <div className="grid grid-cols-1 gap-2 pl-5">
               <div>
                 <p className="text-xs text-muted-foreground mb-0.5">Submitted</p>
-                <p className="text-sm">{formatDate(complaint.date)}</p>
+                <p className="text-sm">{formatDateTime(complaint.date)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-0.5">Created At</p>
-                <p className="text-sm">{formatDate(complaint.createdAt)}</p>
+                <p className="text-sm">{formatDateTime(complaint.createdAt)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-0.5">Last Updated</p>
-                <p className="text-sm">{formatDate(complaint.updatedAt)}</p>
+                <p className="text-sm">{formatDateTime(complaint.updatedAt)}</p>
               </div>
             </div>
           </div>

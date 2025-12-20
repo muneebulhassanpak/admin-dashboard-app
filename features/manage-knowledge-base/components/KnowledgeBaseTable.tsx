@@ -43,6 +43,7 @@ import {
 import type { KnowledgeBaseFile, PaginationState } from '../types';
 import { FileType } from '../types';
 import { FILE_TYPE_LABELS, FILE_TYPE_COLORS } from '../utils/constants';
+import { formatFileSize, formatDate } from '../utils/formatters';
 import { TableSkeleton } from '@/components/skeletons';
 
 interface KnowledgeBaseTableProps {
@@ -58,21 +59,6 @@ interface KnowledgeBaseTableProps {
   onDownloadFile: (id: string, fileName: string) => void;
   onPaginationChange: (pagination: Partial<PaginationState>) => void;
 }
-
-const formatFileSize = (sizeKB: number): string => {
-  if (sizeKB < 1024) {
-    return `${sizeKB} KB`;
-  }
-  return `${(sizeKB / 1024).toFixed(2)} MB`;
-};
-
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(date);
-};
 
 export function KnowledgeBaseTable({
   files,
@@ -180,7 +166,7 @@ export function KnowledgeBaseTable({
       },
       {
         id: 'actions',
-        header: () => <div className="text-center">Actions</div>,
+        header: () => <div className="w-full text-center">Actions</div>,
         cell: ({ row }) => {
           const file = row.original;
           const isDeleting = deleting === file.id;
