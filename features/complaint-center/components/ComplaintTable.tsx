@@ -130,8 +130,9 @@ export function ComplaintTable({
       {
         accessorKey: 'date',
         header: 'Date',
+        size: 8,
         cell: ({ getValue }) => (
-          <div className="w-[100px]">
+          <div className="min-w-[90px]">
             <span className="text-sm">{formatDate(getValue() as string)}</span>
           </div>
         ),
@@ -139,10 +140,11 @@ export function ComplaintTable({
       {
         accessorKey: 'complaint',
         header: 'Complaint',
+        size: 30,
         cell: ({ getValue }) => {
           const text = getValue() as string;
           return (
-            <div className="w-[250px]">
+            <div className="min-w-[220px] max-w-[500px]">
               <p className="truncate text-sm font-medium" title={text}>{text}</p>
             </div>
           );
@@ -151,10 +153,11 @@ export function ComplaintTable({
       {
         accessorKey: 'flaggedMessage',
         header: 'Flagged Message',
+        size: 30,
         cell: ({ getValue }) => {
           const text = getValue() as string;
           return (
-            <div className="w-[200px]">
+            <div className="min-w-[200px] max-w-[450px]">
               <p className="truncate text-sm text-muted-foreground italic" title={text}>
                 &ldquo;{text}&rdquo;
               </p>
@@ -165,8 +168,9 @@ export function ComplaintTable({
       {
         accessorKey: 'studentUsername',
         header: 'Student',
+        size: 10,
         cell: ({ getValue }) => (
-          <div className="w-[120px]">
+          <div className="min-w-[90px]">
             <span className="text-sm font-medium truncate block">{getValue() as string}</span>
           </div>
         ),
@@ -174,8 +178,9 @@ export function ComplaintTable({
       {
         accessorKey: 'parentEmail',
         header: 'Parent Email',
+        size: 14,
         cell: ({ getValue }) => (
-          <div className="w-[180px]">
+          <div className="min-w-[140px] max-w-[220px]">
             <span className="text-sm text-muted-foreground truncate block">{getValue() as string}</span>
           </div>
         ),
@@ -183,20 +188,21 @@ export function ComplaintTable({
       {
         id: 'status',
         header: 'Status',
+        size: 8,
         cell: ({ row }) => {
           const complaint = row.original;
           const isUpdating = updating === complaint.id;
 
           if (isUpdating) {
             return (
-              <div className="w-[100px] flex items-center gap-2">
+              <div className="min-w-[90px] flex items-center gap-2">
                 <Loader className="h-4 w-4 animate-spin" />
               </div>
             );
           }
 
           return (
-            <div className="w-[100px]">
+            <div className="min-w-[90px]">
               <Badge variant={getStatusBadgeVariant(complaint.status)}>
                 {getStatusLabel(complaint.status)}
               </Badge>
@@ -207,13 +213,14 @@ export function ComplaintTable({
       {
         id: 'actions',
         header: 'Actions',
+        size: 3,
         cell: ({ row }) => {
           const complaint = row.original;
           const isDeleting = deleting === complaint.id;
           const isUpdating = updating === complaint.id;
 
           return (
-            <div className="w-[60px]">
+            <div className="min-w-[50px]">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -316,12 +323,16 @@ export function ComplaintTable({
       {/* Table */}
       <div className="w-full rounded-lg border">
         <div className="relative w-full overflow-x-auto">
-          <table className="caption-bottom text-sm">
+          <table className="w-full caption-bottom text-sm table-fixed">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="whitespace-nowrap">
+                    <TableHead
+                      key={header.id}
+                      className="whitespace-nowrap"
+                      style={{ width: `${header.column.getSize()}%` }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -335,7 +346,7 @@ export function ComplaintTable({
                 columns={columns.length}
                 rows={5}
                 showHeader={false}
-                columnWidths={['w-[100px]', 'w-[250px]', 'w-[200px]', 'w-[120px]', 'w-[180px]', 'w-[100px]', 'w-[60px]']}
+                columnWidths={['8%', '30%', '30%', '10%', '14%', '8%', '3%']}
               />
             ) : (
               <TableBody>
@@ -352,7 +363,10 @@ export function ComplaintTable({
                   table.getRowModel().rows.map((row) => (
                     <TableRow key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell
+                          key={cell.id}
+                          style={{ width: `${cell.column.getSize()}%` }}
+                        >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
