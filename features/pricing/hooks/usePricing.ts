@@ -51,7 +51,12 @@ export function usePricing(): UsePricingReturn {
     try {
       setError(null);
       await pricingService.createPlan(dto);
-      await fetchPlans();
+      // Reset to page 1 and refresh to show the newly created plan
+      if (page !== 1) {
+        setPage(1);
+      } else {
+        await fetchPlans();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create plan');
       throw err;
