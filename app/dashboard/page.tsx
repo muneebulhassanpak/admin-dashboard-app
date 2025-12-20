@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { dashboardService } from "@/features/dashboard/services";
 import { DashboardClient } from "@/features/dashboard/components";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Overview of your AI Tutor platform with key metrics, revenue analytics, user growth, and system health monitoring.",
+};
 
 export default async function DashboardPage() {
   try {
