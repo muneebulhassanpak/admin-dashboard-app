@@ -27,6 +27,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { ROUTES } from '@/lib/routes';
+import { ChangePasswordModal } from '@/components/change-password-modal';
 
 const menuItems = [
   {
@@ -70,6 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = React.useState(false);
 
   const handleLogout = () => {
     setIsLoggingOut(true);
@@ -129,11 +131,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="transition-all duration-200">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Change Password" className="transition-all duration-200">
-              <Link href={ROUTES.DASHBOARD.SETTINGS}>
-                <Settings className="transition-transform duration-200" />
-                <span className="transition-opacity duration-200">Change Password</span>
-              </Link>
+            <SidebarMenuButton onClick={() => setIsChangePasswordOpen(true)} tooltip="Change Password" className="transition-all duration-200">
+              <Settings className="transition-transform duration-200" />
+              <span className="transition-opacity duration-200">Change Password</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -149,6 +149,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
+      <ChangePasswordModal
+        open={isChangePasswordOpen}
+        onOpenChange={setIsChangePasswordOpen}
+      />
     </Sidebar>
   );
 }
