@@ -1,8 +1,3 @@
-/**
- * Create Plan Modal Component
- * Modal for creating new pricing plans
- */
-
 'use client';
 
 import { useState, useEffect } from 'react';
