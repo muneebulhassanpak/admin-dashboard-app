@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { BadgePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePricing } from '../hooks';
@@ -97,7 +97,7 @@ export function PricingClient() {
           </p>
         </div>
         <Button onClick={handleCreatePlan}>
-          <Plus className="h-4 w-4" />
+          <BadgePlus className="h-4 w-4" />
           Create Plan
         </Button>
       </div>
