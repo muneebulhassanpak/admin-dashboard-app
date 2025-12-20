@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import Image from 'next/image';
 import { useLogin } from '../hooks';
 import { MOCK_CREDENTIALS } from '../utils/constants';
 
@@ -211,16 +210,61 @@ export function LoginForm({
             </div>
           </div>
 
-          <div className="bg-muted relative hidden md:block min-h-[700px]">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent mix-blend-multiply" />
-            <Image
-              src="/synthia-ai-image.png"
-              alt="Synthia AI Logo"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-              width={200}
-              height={700}
-              priority
-            />
+          <div className="relative hidden md:flex min-h-[700px] flex-col items-center justify-center overflow-hidden bg-background border-l border-border/50">
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                                  linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+                backgroundSize: '40px 40px',
+              }}></div>
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 text-center px-8 space-y-8 max-w-md">
+              {/* Simple Icon */}
+              <div className="mx-auto w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center border border-border/50">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-8 h-8 text-muted-foreground"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                  />
+                </svg>
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-2xl font-semibold text-foreground">
+                  Admin Portal
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Secure access to manage your AI education platform. Monitor users, content, and system settings.
+                </p>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4 pt-6">
+                <div className="text-center space-y-1">
+                  <div className="text-2xl font-bold text-foreground/90">100%</div>
+                  <div className="text-xs text-muted-foreground/80">Secure</div>
+                </div>
+                <div className="text-center space-y-1 border-x border-border/30">
+                  <div className="text-2xl font-bold text-foreground/90">24/7</div>
+                  <div className="text-xs text-muted-foreground/80">Available</div>
+                </div>
+                <div className="text-center space-y-1">
+                  <div className="text-2xl font-bold text-foreground/90">AI</div>
+                  <div className="text-xs text-muted-foreground/80">Powered</div>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
