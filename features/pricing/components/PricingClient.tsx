@@ -5,24 +5,32 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePricing } from '../hooks';
 import { PricingTable } from './PricingTable';
-import type { PricingPlan } from '../types';
+import { CreatePlanModal } from './CreatePlanModal';
+import type { PricingPlan, CreatePlanDto } from '../types';
 
 export function PricingClient() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+
   const {
     plans,
+    allPlans,
     loading,
     updating,
     deleting,
     error,
+    pagination,
+    createPlan,
     deletePlan,
     togglePlanStatus,
+    setPage,
   } = usePricing();
 
   useEffect(() => {
@@ -63,10 +71,19 @@ export function PricingClient() {
   };
 
   const handleCreatePlan = () => {
-    toast.info('Create New Plan', {
-      description: 'Plan creation modal coming soon',
-      position: 'top-center',
-    });
+    setIsCreateModalOpen(true);
+  };
+
+  const handleSubmitCreatePlan = async (dto: CreatePlanDto) => {
+    try {
+      setCreating(true);
+      await createPlan(dto);
+    } catch (err) {
+      // Error handled by hook
+      throw err;
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -92,7 +109,7 @@ export function PricingClient() {
           {loading ? (
             <Skeleton className="h-8 w-12 mt-1" />
           ) : (
-            <p className="text-2xl font-bold mt-1">{plans.length}</p>
+            <p className="text-2xl font-bold mt-1">{pagination.total}</p>
           )}
         </div>
         <div className="rounded-lg border p-4">
@@ -101,7 +118,7 @@ export function PricingClient() {
             <Skeleton className="h-8 w-12 mt-1" />
           ) : (
             <p className="text-2xl font-bold mt-1">
-              {plans.filter((p) => p.status === 'active').length}
+              {allPlans.filter((p) => p.status === 'active').length}
             </p>
           )}
         </div>
@@ -111,7 +128,7 @@ export function PricingClient() {
             <Skeleton className="h-8 w-20 mt-1" />
           ) : (
             <p className="text-2xl font-bold mt-1">
-              {plans.reduce((sum, p) => sum + (p.subscriberCount || 0), 0)}
+              {allPlans.reduce((sum, p) => sum + (p.subscriberCount || 0), 0)}
             </p>
           )}
         </div>
@@ -121,7 +138,7 @@ export function PricingClient() {
             <Skeleton className="h-8 w-32 mt-1" />
           ) : (
             <p className="text-2xl font-bold mt-1">
-              ${plans.reduce((sum, p) => sum + p.monthlyPrice * (p.subscriberCount || 0), 0).toLocaleString()}
+              ${allPlans.reduce((sum, p) => sum + p.monthlyPrice * (p.subscriberCount || 0), 0).toLocaleString()}
             </p>
           )}
         </div>
@@ -136,6 +153,8 @@ export function PricingClient() {
         onEditPlan={handleEditPlan}
         onDeletePlan={handleDeletePlan}
         onToggleStatus={handleToggleStatus}
+        pagination={pagination}
+        onPageChange={setPage}
       />
 
       {/* Help Text */}
@@ -148,6 +167,14 @@ export function PricingClient() {
           <li>Edit plans to update pricing, features, and limits</li>
         </ul>
       </div>
+
+      {/* Create Plan Modal */}
+      <CreatePlanModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        onSubmit={handleSubmitCreatePlan}
+        creating={creating}
+      />
     </div>
   );
 }

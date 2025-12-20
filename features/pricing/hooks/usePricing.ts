@@ -11,24 +11,37 @@ import type { PricingPlan, CreatePlanDto, UpdatePlanDto, UsePricingReturn } from
 
 export function usePricing(): UsePricingReturn {
   const [plans, setPlans] = useState<PricingPlan[]>([]);
+  const [allPlans, setAllPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const fetchPlans = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const data = await pricingService.getPlans();
-      setPlans(data);
+      // Fetch paginated plans and all plans for stats in parallel
+      const [response, all] = await Promise.all([
+        pricingService.getPlans({ page, pageSize }),
+        pricingService.getAllPlans(),
+      ]);
+
+      setPlans(response.data);
+      setAllPlans(all);
+      setTotal(response.total);
+      setTotalPages(response.totalPages);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch pricing plans');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize]);
 
   useEffect(() => {
     fetchPlans();
@@ -96,14 +109,23 @@ export function usePricing(): UsePricingReturn {
 
   return {
     plans,
+    allPlans,
     loading,
     updating,
     deleting,
     error,
+    pagination: {
+      page,
+      pageSize,
+      total,
+      totalPages,
+    },
     createPlan,
     updatePlan,
     deletePlan,
     togglePlanStatus,
     refreshPlans,
+    setPage,
+    setPageSize,
   };
 }

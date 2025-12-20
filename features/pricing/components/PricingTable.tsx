@@ -41,6 +41,13 @@ interface PricingTableProps {
   onEditPlan: (plan: PricingPlan) => void;
   onDeletePlan: (id: string) => void;
   onToggleStatus: (id: string) => void;
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+  onPageChange: (page: number) => void;
 }
 
 const getStatusBadgeVariant = (status: PlanStatus) => {
@@ -72,6 +79,8 @@ export function PricingTable({
   onEditPlan,
   onDeletePlan,
   onToggleStatus,
+  pagination,
+  onPageChange,
 }: PricingTableProps) {
   const columns = useMemo<ColumnDef<PricingPlan>[]>(
     () => [
@@ -289,6 +298,38 @@ export function PricingTable({
           )}
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && plans.length > 0 && (
+        <div className="flex items-center justify-between p-4 border-t">
+          <p className="text-sm text-muted-foreground">
+            Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
+            {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
+            {pagination.total} plans
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pagination.page - 1)}
+              disabled={pagination.page === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pagination.page + 1)}
+              disabled={pagination.page === pagination.totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

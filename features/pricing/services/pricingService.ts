@@ -4,7 +4,7 @@
  */
 
 import { MOCK_PRICING_PLANS } from '../utils/constants';
-import type { PricingPlan, CreatePlanDto, UpdatePlanDto } from '../types';
+import type { PricingPlan, CreatePlanDto, UpdatePlanDto, PaginationParams, PaginatedResponse } from '../types';
 import { PlanStatus } from '../types';
 
 // Simulate API delay
@@ -15,10 +15,45 @@ let plansData = [...MOCK_PRICING_PLANS];
 
 export const pricingService = {
   /**
-   * Get all pricing plans
+   * Get all pricing plans with pagination
    */
-  async getPlans(): Promise<PricingPlan[]> {
+  async getPlans(params?: PaginationParams): Promise<PaginatedResponse<PricingPlan>> {
     await delay(600);
+
+    const sortedPlans = [...plansData].sort((a, b) => a.monthlyPrice - b.monthlyPrice);
+    const total = sortedPlans.length;
+
+    // If no pagination params provided, return all plans
+    if (!params) {
+      return {
+        data: sortedPlans,
+        total,
+        page: 1,
+        pageSize: total,
+        totalPages: 1,
+      };
+    }
+
+    const { page, pageSize } = params;
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = sortedPlans.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(total / pageSize);
+
+    return {
+      data: paginatedData,
+      total,
+      page,
+      pageSize,
+      totalPages,
+    };
+  },
+
+  /**
+   * Get all plans (for stats calculation)
+   */
+  async getAllPlans(): Promise<PricingPlan[]> {
+    await delay(200);
     return [...plansData].sort((a, b) => a.monthlyPrice - b.monthlyPrice);
   },
 

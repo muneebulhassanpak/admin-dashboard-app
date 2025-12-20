@@ -52,15 +52,37 @@ export interface UpdatePlanDto {
   features?: PricingFeature[];
 }
 
+export interface PaginationParams {
+  page: number;
+  pageSize: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export interface UsePricingReturn {
   plans: PricingPlan[];
+  allPlans: PricingPlan[];
   loading: boolean;
   updating: string | null;
   deleting: string | null;
   error: string | null;
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
   createPlan: (dto: CreatePlanDto) => Promise<void>;
   updatePlan: (dto: UpdatePlanDto) => Promise<void>;
   deletePlan: (id: string) => Promise<void>;
   togglePlanStatus: (id: string) => Promise<void>;
   refreshPlans: () => Promise<void>;
+  setPage: (page: number) => void;
+  setPageSize: (pageSize: number) => void;
 }
