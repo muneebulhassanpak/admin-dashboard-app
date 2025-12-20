@@ -11,10 +11,9 @@ import {
   PopularSubjectsChart,
   DashboardSkeleton,
 } from "@/features/dashboard/components";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle,RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const { dashboardData, loading, error, refetch } = useDashboard();
@@ -44,18 +43,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header with Refresh Button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Welcome back! Here&apos;s your AI Tutor platform overview.
-          </p>
-        </div>
-        <Button variant="outline" onClick={refetch}>
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
+      {/* Header */}
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground">
+          Welcome back! Here&apos;s your AI Tutor platform overview.
+        </p>
       </div>
 
       {/* KPI Cards - 4 in one row */}

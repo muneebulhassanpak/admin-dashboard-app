@@ -9,6 +9,7 @@ export function useDashboard(): UseDashboardReturn {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboardData = useCallback(async () => {
@@ -26,6 +27,7 @@ export function useDashboard(): UseDashboardReturn {
   }, []);
 
   const refetch = useCallback(async () => {
+    setRefreshing(true);
     setError(null);
     try {
       const data = await dashboardService.refreshDashboard();
@@ -33,6 +35,8 @@ export function useDashboard(): UseDashboardReturn {
     } catch (err) {
       setError("Failed to refresh dashboard data. Please try again.");
       console.error("Dashboard refresh error:", err);
+    } finally {
+      setRefreshing(false);
     }
   }, []);
 
@@ -43,6 +47,7 @@ export function useDashboard(): UseDashboardReturn {
   return {
     dashboardData,
     loading,
+    refreshing,
     error,
     refetch,
   };
