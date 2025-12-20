@@ -14,6 +14,6 @@ export const MOCK_USERS: User[] = [
 export const MOCK_CREDENTIALS: LoginCredentials[] = [
   {
     email: 'admin@example.com',
-    password: 'admin123',
+    password: 'Admin@2025!SecurePass',
   },
 ];

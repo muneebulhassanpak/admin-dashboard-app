@@ -12,6 +12,7 @@ import {
   BookOpen,
   Home,
   LogOut,
+  Loader,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -68,12 +69,16 @@ const menuItems = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   const handleLogout = () => {
-    // Clear user from localStorage
-    localStorage.removeItem('user');
-    // Redirect to login
-   router.push(ROUTES.LOGIN);
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      // Clear user from localStorage
+      localStorage.removeItem('user');
+      // Redirect to login
+      router.push(ROUTES.LOGIN);
+    }, 400);
   };
 
   return (
@@ -124,16 +129,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter className="transition-all duration-200">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings" className="transition-all duration-200">
+            <SidebarMenuButton asChild tooltip="Change Password" className="transition-all duration-200">
               <Link href={ROUTES.DASHBOARD.SETTINGS}>
                 <Settings className="transition-transform duration-200" />
-                <span className="transition-opacity duration-200">Settings</span>
+                <span className="transition-opacity duration-200">Change Password</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip="Logout" className="transition-all duration-200">
-              <LogOut className="transition-transform duration-200" />
+            <SidebarMenuButton onClick={handleLogout} tooltip="Logout" className="transition-all duration-200" disabled={isLoggingOut}>
+              {isLoggingOut ? (
+                <Loader className="animate-spin transition-transform duration-200" />
+              ) : (
+                <LogOut className="transition-transform duration-200" />
+              )}
               <span className="transition-opacity duration-200">Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
