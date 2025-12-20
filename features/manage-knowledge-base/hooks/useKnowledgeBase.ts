@@ -67,15 +67,15 @@ export function useKnowledgeBase() {
     }
   }, []);
 
-  // Load files on mount and when filters change
+  // Load both files and stats in parallel on mount and when filters/pagination change
   useEffect(() => {
-    loadFiles();
-  }, [loadFiles]);
+    const loadData = async () => {
+      // Execute both API calls in parallel for better performance
+      await Promise.all([loadFiles(), loadStats()]);
+    };
 
-  // Load stats on mount
-  useEffect(() => {
-    loadStats();
-  }, [loadStats]);
+    loadData();
+  }, [loadFiles, loadStats]);
 
   // Upload a new file
   const uploadFile = useCallback(
