@@ -14,7 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { CreatePlanDto, PricingFeature } from '../types';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { CreatePlanDto, PricingFeature, PricingPlan } from '../types';
 import { AVAILABLE_FEATURES } from '../utils/constants';
 
 interface CreatePlanModalProps {
@@ -22,6 +23,8 @@ interface CreatePlanModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreatePlanDto) => Promise<void>;
   creating?: boolean;
+  editPlan?: PricingPlan | null;
+  loadingPlan?: boolean;
 }
 
 export function CreatePlanModal({
@@ -29,7 +32,10 @@ export function CreatePlanModal({
   onOpenChange,
   onSubmit,
   creating = false,
+  editPlan = null,
+  loadingPlan = false,
 }: CreatePlanModalProps) {
+  const isEditMode = !!editPlan;
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -45,6 +51,32 @@ export function CreatePlanModal({
 
   const [unlimitedLearners, setUnlimitedLearners] = useState(false);
   const [unlimitedLessons, setUnlimitedLessons] = useState(false);
+
+  // Prefill form when editing
+  useEffect(() => {
+    if (editPlan && !loadingPlan) {
+      setFormData({
+        name: editPlan.name,
+        description: editPlan.description,
+        monthlyPrice: editPlan.monthlyPrice.toString(),
+        yearlyPrice: editPlan.yearlyPrice.toString(),
+        maxLearners: editPlan.maxLearners?.toString() || '',
+        maxLessonsPerMonth: editPlan.maxLessonsPerMonth?.toString() || '',
+      });
+      setUnlimitedLearners(editPlan.maxLearners === null);
+      setUnlimitedLessons(editPlan.maxLessonsPerMonth === null);
+
+      // Map existing features to available features
+      const updatedFeatures = AVAILABLE_FEATURES.map((name) => {
+        const existingFeature = editPlan.features.find((f) => f.name === name);
+        return {
+          name,
+          enabled: existingFeature?.enabled || false,
+        };
+      });
+      setFeatures(updatedFeatures);
+    }
+  }, [editPlan, loadingPlan]);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -148,16 +180,64 @@ export function CreatePlanModal({
       <DialogContent className="md:max-w-3xl h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
         <div className="px-6 pt-6 pb-4 border-b bg-background">
           <DialogHeader>
-            <DialogTitle>Create New Pricing Plan</DialogTitle>
+            <DialogTitle>
+              {isEditMode ? 'Edit Pricing Plan' : 'Create New Pricing Plan'}
+            </DialogTitle>
             <DialogDescription>
-              Fill in the details below to create a new pricing plan for your users.
+              {isEditMode
+                ? 'Update the details below to modify this pricing plan.'
+                : 'Fill in the details below to create a new pricing plan for your users.'}
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="flex-1 overflow-y-auto px-6 py-4">
-            <div className="space-y-5 pr-2">
+            {loadingPlan ? (
+              <div className="space-y-5 pr-2">
+                {/* Skeleton loader */}
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-32" />
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-24" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-28" />
+                  <div className="space-y-2.5">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-2.5">
+                    <Skeleton className="h-5 w-52" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-32 w-full rounded-lg" />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-5 pr-2">
               {/* Basic Information */}
               <div className="space-y-3">
                 <h3 className="text-sm font-medium">Basic Information</h3>
@@ -306,6 +386,7 @@ export function CreatePlanModal({
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           <div className="px-6 py-4 border-t bg-background flex gap-3 shrink-0">
@@ -313,18 +394,18 @@ export function CreatePlanModal({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={creating}
+              disabled={creating || loadingPlan}
               className="flex-1"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={creating}
+              disabled={creating || loadingPlan}
               loading={creating}
               className="flex-1"
             >
-              Create Plan
+              {isEditMode ? 'Update Plan' : 'Create Plan'}
             </Button>
           </div>
         </form>

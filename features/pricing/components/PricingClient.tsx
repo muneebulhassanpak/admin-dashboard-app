@@ -18,6 +18,8 @@ import type { PricingPlan, CreatePlanDto } from '../types';
 export function PricingClient() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<PricingPlan | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState(false);
 
   const {
     plans,
@@ -28,6 +30,7 @@ export function PricingClient() {
     error,
     pagination,
     createPlan,
+    updatePlan,
     deletePlan,
     togglePlanStatus,
     setPage,
@@ -41,11 +44,16 @@ export function PricingClient() {
     }
   }, [error]);
 
-  const handleEditPlan = (plan: PricingPlan) => {
-    toast.info('Edit Plan', {
-      description: `Editing ${plan.name} plan (feature coming soon)`,
-      position: 'top-center',
-    });
+  const handleEditPlan = async (plan: PricingPlan) => {
+    // Show modal with loading state
+    setIsCreateModalOpen(true);
+    setLoadingPlan(true);
+
+    // Simulate fetching plan details from backend
+    setTimeout(() => {
+      setEditingPlan(plan);
+      setLoadingPlan(false);
+    }, 800);
   };
 
   const handleDeletePlan = async (id: string) => {
@@ -77,12 +85,31 @@ export function PricingClient() {
   const handleSubmitCreatePlan = async (dto: CreatePlanDto) => {
     try {
       setCreating(true);
-      await createPlan(dto);
+      if (editingPlan) {
+        // Update existing plan
+        await updatePlan({
+          id: editingPlan.id,
+          ...dto,
+        });
+        toast.success('Plan updated successfully', { position: 'top-center' });
+      } else {
+        // Create new plan
+        await createPlan(dto);
+      }
     } catch (err) {
       // Error handled by hook
       throw err;
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleModalClose = (open: boolean) => {
+    setIsCreateModalOpen(open);
+    if (!open) {
+      // Reset edit state when modal closes
+      setEditingPlan(null);
+      setLoadingPlan(false);
     }
   };
 
@@ -168,12 +195,14 @@ export function PricingClient() {
         </ul>
       </div>
 
-      {/* Create Plan Modal */}
+      {/* Create/Edit Plan Modal */}
       <CreatePlanModal
         open={isCreateModalOpen}
-        onOpenChange={setIsCreateModalOpen}
+        onOpenChange={handleModalClose}
         onSubmit={handleSubmitCreatePlan}
         creating={creating}
+        editPlan={editingPlan}
+        loadingPlan={loadingPlan}
       />
     </div>
   );
