@@ -7,3 +7,4 @@ export { SystemHealthStatus } from "./SystemHealthStatus";
 export { PricingDistributionChart } from "./PricingDistributionChart";
 export { PopularSubjectsChart } from "./PopularSubjectsChart";
 export { DashboardSkeleton } from "./DashboardSkeleton";
+export { DashboardClient } from "./DashboardClient";
