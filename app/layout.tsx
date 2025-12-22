@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   keywords: ["AI Tutor", "Admin Portal", "Education Management", "Learning Platform", "Content Management"],
   authors: [{ name: "AI Tutor Team" }],
   creator: "AI Tutor",
+  alternates: {
+    canonical: "https://ai-tutor-admin.com",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -48,11 +51,11 @@ export const metadata: Metadata = {
     creator: "@aitutor",
   },
   robots: {
-    index: false, // Admin portal should not be indexed
-    follow: false,
+    index: true,
+    follow: true,
     googleBot: {
-      index: false,
-      follow: false,
+      index: true,
+      follow: true,
     },
   },
 };
@@ -68,8 +71,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AI Tutor Admin Portal',
+    description: 'Comprehensive admin dashboard for managing your AI-powered educational platform.',
+    url: 'https://ai-tutor-admin.com',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web Browser',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
