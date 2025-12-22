@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Users,
   DollarSign,
@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/sidebar';
 import { ROUTES } from '@/lib/routes';
 import { ChangePasswordModal } from '@/components/change-password-modal';
+import { useLogout } from '@/features/auth/hooks';
 
 const menuItems = [
   {
@@ -69,19 +70,8 @@ const menuItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const { logout, isLoggingOut } = useLogout();
   const [isChangePasswordOpen, setIsChangePasswordOpen] = React.useState(false);
-
-  const handleLogout = () => {
-    setIsLoggingOut(true);
-    setTimeout(() => {
-      // Clear user from localStorage
-      localStorage.removeItem('user');
-      // Redirect to login
-      router.push(ROUTES.LOGIN);
-    }, 400);
-  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -137,7 +127,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip="Logout" className="transition-all duration-200" disabled={isLoggingOut}>
+            <SidebarMenuButton onClick={logout} tooltip="Logout" className="transition-all duration-200" disabled={isLoggingOut}>
               {isLoggingOut ? (
                 <Loader className="animate-spin transition-transform duration-200" />
               ) : (

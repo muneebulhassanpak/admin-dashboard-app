@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ROUTES } from '@/lib/routes';
-import { authService } from '../services/authService';
+import { loginAction } from '../actions/authActions';
 import type { LoginCredentials, UseLoginReturn } from '../types';
 
 export function useLogin(): UseLoginReturn {
@@ -13,20 +13,21 @@ export function useLogin(): UseLoginReturn {
     setLoading(true);
 
     try {
-      const user = await authService.login(credentials);
+      // Call server action instead of client-side service
+      const result = await loginAction(credentials);
 
-      // Store user in localStorage (in real app, would use secure tokens)
-      localStorage.setItem('user', JSON.stringify(user));
+      if (!result.success) {
+        throw new Error(result.error || 'Login failed');
+      }
 
       // Show success toast
       toast.success('Login successful!', {
-        description: `Welcome back, ${user.name}`,
+        description: `Welcome back, ${result.user?.name}`,
       });
 
-      // Redirect to dashboard
-      setTimeout(() => {
-        router.push(ROUTES.DASHBOARD.ROOT);
-      }, 500);
+      // Redirect to dashboard (middleware will handle auth check)
+      router.push(ROUTES.DASHBOARD.ROOT);
+      router.refresh(); // Refresh to update server components
     } catch (err) {
       if (err instanceof Error) {
         toast.error('Login failed', {
