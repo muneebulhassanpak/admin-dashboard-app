@@ -95,6 +95,7 @@ export function LoginForm({
                         <FormControl>
                           <Input
                             type="email"
+                            autoComplete="email"
                             placeholder="admin@example.com"
                             disabled={loading}
                             className="h-11"
