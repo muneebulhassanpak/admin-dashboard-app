@@ -224,14 +224,14 @@ export function KnowledgeBaseClient() {
           </div>
 
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Select
               value={filters.fileType || 'all'}
               onValueChange={(value) =>
                 updateFilters({ fileType: value === 'all' ? 'all' : (value as FileType) })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
               <SelectContent>
@@ -250,7 +250,7 @@ export function KnowledgeBaseClient() {
                 updateFilters({ level: value === 'all' ? 'all' : (value as EducationLevel) })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="All Levels" />
               </SelectTrigger>
               <SelectContent>
@@ -269,7 +269,7 @@ export function KnowledgeBaseClient() {
                 updateFilters({ subject: value === 'all' ? 'all' : (value as Subject) })
               }
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="All Subjects" />
               </SelectTrigger>
               <SelectContent>
@@ -283,7 +283,7 @@ export function KnowledgeBaseClient() {
             </Select>
 
             {hasActiveFilters && (
-              <Button variant="outline" onClick={handleResetFilters}>
+              <Button variant="outline" onClick={handleResetFilters} className="w-full sm:w-auto">
                 <X className="h-4 w-4 mr-1" />
                 Clear Filters
               </Button>

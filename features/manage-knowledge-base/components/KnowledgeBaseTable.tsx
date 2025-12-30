@@ -290,8 +290,8 @@ export function KnowledgeBaseTable({
 
       {/* Pagination Controls */}
       {!loading && totalFiles > 0 && (
-        <div className="flex items-center justify-between px-2">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-between gap-4 px-2 sm:flex-row">
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
             Showing {pagination.pageIndex * pagination.pageSize + 1} to{' '}
             {Math.min((pagination.pageIndex + 1) * pagination.pageSize, totalFiles)} of {totalFiles} files
           </div>
@@ -312,7 +312,7 @@ export function KnowledgeBaseTable({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <div className="text-sm font-medium">
+            <div className="text-sm font-medium whitespace-nowrap">
               Page {pagination.pageIndex + 1} of {pageCount}
             </div>
             <Button
