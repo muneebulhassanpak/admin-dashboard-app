@@ -293,8 +293,8 @@ export function UserTable({
 
       {/* Pagination */}
       {!loading && users.length > 0 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <p className="text-sm text-muted-foreground text-center sm:text-left">
             Showing {(pagination.page - 1) * pagination.pageSize + 1} to{' '}
             {Math.min(pagination.page * pagination.pageSize, pagination.total)} of{' '}
             {pagination.total} users
@@ -308,7 +308,7 @@ export function UserTable({
             >
               Previous
             </Button>
-            <span className="text-sm">
+            <span className="text-sm whitespace-nowrap">
               Page {pagination.page} of {pagination.totalPages}
             </span>
             <Button
